@@ -1,43 +1,116 @@
-/**
- * @function moments_demo.cpp
- * @brief Demo code to calculate moments
- * @author OpenCV team
- */
+// Main
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 
 using namespace cv;
 using namespace std;
 
-int thresh = 80;
-const int max_thresh = 255;
-RNG rng(12345);
+// Prototypes
+
+// Settings
+string camera = "C:/Users/brian_000/Desktop/flap_blur.avi";   // Which camera C:/ for file path or 0 for webcam
+int thresh = 100;   // How well does it detect edges
+const int max_thresh = 255;   // Maximum amount of threshold
+RNG rng(12345);   // Random number generator for color of edges
+
+// Color to be tracked settings
+int iLowH = 0;
+int iHighH = 179;
+
+int iLowS = 52;
+int iHighS = 119;
+
+int iLowV = 150;
+int iHighV = 255;
+
+
 int main(int, char**)
 {
-	VideoCapture cap(0); // open the default camera
-	if(!cap.isOpened())  // check if we succeeded
+	// Capture video from webcam or prerecorded file
+	VideoCapture cap(camera); //capture the video from webcam
+	if (!cap.isOpened())  // if not success, exit program
+	{
+		cout << "Cannot open the web cam" << endl;
 		return -1;
+	}
 
-	namedWindow("edges",1);
+	namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
+
+	// Matrix for image outputs 
+	Mat frame;
+	Mat frame_gray;
+	Mat canny_output;
+
+	// Vectors
+	vector<vector<Point> > contours;
+	vector<Vec4i> hierarchy;
+
+	//Create trackbars in "Control" window
+	createTrackbar("LowH", "Control", &iLowH, 179); //Hue (0 - 179)
+	createTrackbar("HighH", "Control", &iHighH, 179);
+
+	createTrackbar("LowS", "Control", &iLowS, 255); //Saturation (0 - 255)
+	createTrackbar("HighS", "Control", &iHighS, 255);
+
+	createTrackbar("LowV", "Control", &iLowV, 255);//Value (0 - 255)
+	createTrackbar("HighV", "Control", &iHighV, 255);
+
+	int iLastX = -1;
+	int iLastY = -1;
+
+	//Capture a temporary image from the camera
+	Mat imgTmp;
+	cap.read(imgTmp);
+
+	//Create a black image with the size as the camera output
+	Mat imgLines = Mat::zeros(imgTmp.size(), CV_8UC3);;
+
+
+
+	// Main loop
 	while (1)
 	{
-		Mat frame;
-		Mat frame_gray;
-		Mat canny_output;
+		Mat imgOriginal;
 
-		vector<vector<Point> > contours;
-		vector<Vec4i> hierarchy;
+		bool bSuccess = cap.read(imgOriginal); // read a new frame from video
 
-		if (!cap.read(frame)) // get a new frame from camera
+
+
+		if (!bSuccess) //if not success, break loop
+		{
+			cout << "Cannot read a frame from video stream" << endl;
 			break;
+		}
 
-		resize(frame, frame, Size(360, 240));
-		cvtColor(frame, frame_gray, CV_BGR2GRAY);
-		//blur(frame_gray, frame_gray, Size(3, 3));
-		GaussianBlur(frame_gray, frame_gray, Size(15, 15), 0);
 
-		Canny(frame_gray, canny_output, thresh, thresh * 2, 3);
+
+		Mat imgHSV;
+
+		cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
+
+		Mat imgThresholded;
+
+		inRange(imgHSV, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), imgThresholded); //Threshold the image
+
+																									  //morphological opening (removes small objects from the foreground)
+		erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+		dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+		//morphological closing (removes small holes from the foreground)
+		dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+		erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+
+
+		imshow("Thresholded Image", imgThresholded); //show the thresholded image
+
+		imgOriginal = imgOriginal + imgLines;
+		imshow("Original", imgOriginal); //show the original image
+
+		Canny(imgThresholded, canny_output, thresh, thresh * 2, 3);
 		/// Find contours
 		findContours(canny_output, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
@@ -71,10 +144,21 @@ int main(int, char**)
 			rectangle(frame, Point(r.x, r.y), Point(r.x + r.width, r.y + r.height), Scalar(0, 255, 0), 2);
 		}
 
-		imshow("frame", frame);
+		//imshow("frame", frame);
 		imshow("edges", drawing);
-		if(waitKey(30) >= 0) break;
+
+
+
+
+
+		if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
+		{
+			cout << "esc key is pressed by user" << endl;
+			break;
+		}
+
 	}
 	// the camera will be deinitialized automatically in VideoCapture destructor
 	return 0;
 }
+
