@@ -2,7 +2,7 @@
 #include <opencv2/opencv.hpp>
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-#include "ObjectFinder.h"
+#include "RegionFinder.h"
 
 using namespace cv;
 using namespace std;
@@ -25,10 +25,11 @@ int main(int, char**)
 	Mat imgTmp;
 	cap.read(imgTmp);
 
-	// Create an object find
-	ObjectFinder objectFinder;
+	// Create an region finder
+	RegionFinder regionFinder;
+	// Add an HSV filter
 	HSVFilter* hsv = new HSVFilter();
-	objectFinder.filters.push_back(hsv);
+	regionFinder.addFilter(hsv);
 
 	// Main loop
 	while (1)
@@ -44,25 +45,28 @@ int main(int, char**)
 			break;
 		}
 		
-		std::vector<Object> objects = objectFinder.find(frame);
+		// Find the regions
+		std::vector<Region> regions = regionFinder.find(frame);
 
+		// Display those Regions
 		Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
-		for (Object object : objects)
+		for (Region region : regions)
 		{
-			object.draw(drawing);
+			region.draw(drawing);
 		}
 
-		/*
-		for (size_t i = 0; i < contours.size(); i++)
+		// Display thei bounding rects on the original frame
+		for (size_t i = 0; i < regions.size(); i++)
 		{
-			Rect r = boundingRect(contours[i]);
+			Rect r = boundingRect(regions[i].contour);
 			rectangle(frame, Point(r.x, r.y), Point(r.x + r.width, r.y + r.height), Scalar(0, 255, 0), 2);
-		}*/
+		}
 
 		imshow("frame", frame);
 		imshow("edges", drawing);
 
-		if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
+		//wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
+		if (waitKey(30) == 27)
 		{
 			cout << "esc key is pressed by user" << endl;
 			break;
