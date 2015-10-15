@@ -1,5 +1,3 @@
-// Main
-
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "opencv2/highgui/highgui.hpp"
@@ -9,7 +7,7 @@ using namespace cv;
 using namespace std;
 
 // Prototypes
-
+Mat HSV(Mat imgOriginal, int iLowH, int iLowS, int iLowV, int iHighH, int iHighS, int iHighV);
 // Settings
 string camera = "C:/Users/brian_000/Desktop/flap_blur.avi";   // Which camera C:/ for file path or 0 for webcam
 int thresh = 100;   // How well does it detect edges
@@ -19,13 +17,10 @@ RNG rng(12345);   // Random number generator for color of edges
 // Color to be tracked settings
 int iLowH = 0;
 int iHighH = 179;
-
 int iLowS = 52;
 int iHighS = 119;
-
 int iLowV = 150;
 int iHighV = 255;
-
 
 int main(int, char**)
 {
@@ -73,62 +68,50 @@ int main(int, char**)
 	// Main loop
 	while (1)
 	{
-		Mat imgOriginal;
-
+		Mat imgOriginal;   // Use for each individual frame
+		
 		bool bSuccess = cap.read(imgOriginal); // read a new frame from video
-
-
-
+		
+		// Error checking
 		if (!bSuccess) //if not success, break loop
 		{
 			cout << "Cannot read a frame from video stream" << endl;
 			break;
 		}
+		
+		// HSV filter
+        Mat imgThresholded;
+        imgThresholded = HSV(imgOriginal, iLowH, iLowS, iLowV, iHighH, iHighS, iHighV);
+          
 
-
-
-		Mat imgHSV;
-
-		cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
-
-		Mat imgThresholded;
-
-		inRange(imgHSV, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), imgThresholded); //Threshold the image
-
-																									  //morphological opening (removes small objects from the foreground)
-		erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-		dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-
-		//morphological closing (removes small holes from the foreground)
-		dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-		erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-
-
-
+        // Display images from HSV
 		imshow("Thresholded Image", imgThresholded); //show the thresholded image
-
 		imgOriginal = imgOriginal + imgLines;
 		imshow("Original", imgOriginal); //show the original image
 
+		
+		
+		// Edge Detection
 		Canny(imgThresholded, canny_output, thresh, thresh * 2, 3);
-		/// Find contours
+		
+		// Find contours
 		findContours(canny_output, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
-		/// Get the moments
+		// Get the moments
 		vector<Moments> mu(contours.size());
 		for (size_t i = 0; i < contours.size(); i++)
 		{
 			mu[i] = moments(contours[i], false);
 		}
 
-		///  Get the mass centers:
+		//  Get the mass centers:
 		vector<Point2f> mc(contours.size());
 		for (size_t i = 0; i < contours.size(); i++)
 		{
 			mc[i] = Point2f(static_cast<float>(mu[i].m10 / mu[i].m00), static_cast<float>(mu[i].m01 / mu[i].m00));
 		}
 
-		/// Draw contours
+		// Draw contours
 		Mat drawing = Mat::zeros(canny_output.size(), CV_8UC3);
 		for (size_t i = 0; i < contours.size(); i++)
 		{
@@ -136,8 +119,6 @@ int main(int, char**)
 			drawContours(drawing, contours, (int)i, color, 2, 8, hierarchy, 0, Point());
 			circle(drawing, mc[i], 4, color, -1, 8, 0);
 		}
-
-
 		for (size_t i = 0; i < contours.size(); i++)
 		{
 			Rect r = boundingRect(contours[i]);
@@ -146,10 +127,6 @@ int main(int, char**)
 
 		//imshow("frame", frame);
 		imshow("edges", drawing);
-
-
-
-
 
 		if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
 		{
@@ -162,3 +139,22 @@ int main(int, char**)
 	return 0;
 }
 
+Mat HSV(Mat imgOriginal, int iLowH, int iLowS, int iLowV, int iHighH, int iHighS, int iHighV)
+{
+   Mat imgHSV;
+   
+   cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
+   
+   Mat imgThresholded;
+   
+   inRange(imgHSV, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), imgThresholded); //Threshold the image
+   
+   //morphological opening (removes small objects from the foreground)
+   erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+   dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+   
+   //morphological closing (removes small holes from the foreground)
+   dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+   erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+   return imgThresholded;
+}
