@@ -36,8 +36,6 @@ int main(int, char**)
 	{
 		Mat frame;   // Use for each individual frame
 		
-		bool bSuccess = cap.read(frame);
-		
 		if (!cap.read(frame)) // read a new frame from video
 		{
 			//if not success, break loop
