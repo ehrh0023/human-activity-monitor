@@ -52,7 +52,7 @@ std::vector<Region> RegionFinder::find(Mat image)
 	return regions;
 }
 
-void RegionFinder::addFilter(Filter* filter)
+void RegionFinder::add_filter(Filter* filter)
 {
 	filters.push_back(filter);
 }

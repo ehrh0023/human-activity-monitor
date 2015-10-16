@@ -34,5 +34,5 @@ struct RegionFinder
 	* Add a filter to the Finder
 	* @param the filter to add
 	*/
-	void addFilter(Filter* filter);
+	void add_filter(Filter* filter);
 };

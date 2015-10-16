@@ -1,6 +1,7 @@
 #pragma once
 #include <opencv2/opencv.hpp>
 #include <string>
+#include "HSVRange.h"
 
 /**
  * @class Filter
@@ -20,14 +21,10 @@ struct Filter
  * @class HSVFilter
  * @brief A Filter which filters out colors outside of a specific HSV bound
  */
+
 struct HSVFilter : public Filter
 {
-	int low_hue;  /** Lower bound of the hue to keep */
-	int high_hue; /** Upper bound of the hue to keep */
-	int low_sat;  /** Lower bound of the saturation to keep */
-	int high_sat; /** Upper bound of the saturation to keep */
-	int low_val;  /** Lower bound of the value to keep */
-	int high_val; /** Upper bound of the value to keep */
+	HSVRange passband; /** Range of HSV values to keep */
 
 	HSVFilter();
 	~HSVFilter();
