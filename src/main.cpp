@@ -3,6 +3,7 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "RegionFinder.h"
+#include "ColorProfiler.h"
 
 using namespace cv;
 using namespace std;
@@ -29,7 +30,11 @@ int main(int, char**)
 	RegionFinder regionFinder;
 	// Add an HSV filter
 	HSVFilter* hsv = new HSVFilter();
-	regionFinder.addFilter(hsv);
+	regionFinder.add_filter(hsv);
+
+	ColorProfiler cp("C:/Users/User/Desktop/haarcascade_frontalface_default.xml");
+
+	bool first = true;
 
 	// Main loop
 	while (1)
@@ -43,6 +48,12 @@ int main(int, char**)
 			break;
 		}
 		
+		if (first)
+		{
+			hsv->passband = cp.determine_colors(frame);
+			first = false;
+		}
+
 		// Find the regions
 		std::vector<Region> regions = regionFinder.find(frame);
 
