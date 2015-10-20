@@ -12,7 +12,7 @@ int main(int, char**)
 {
 	// Capture video from webcam or prerecorded file
 	// "C:/Users/User/Desktop/flap_blur.avi"
-	VideoCapture cap(0); //capture the video from webcam
+	VideoCapture cap("C:/Users/user/Desktop/flap_blur.avi"); //capture the video from webcam
 	if (!cap.isOpened())  // if not success, exit program
 	{
 		cout << "Cannot open the web cam" << endl;
@@ -26,13 +26,13 @@ int main(int, char**)
 	Mat imgTmp;
 	cap.read(imgTmp);
                                              
-	// Create an region finder
+	// Create a region finder
 	RegionFinder regionFinder;
 	// Add an HSV filter
 	HSVFilter* hsv = new HSVFilter();
 	regionFinder.add_filter(hsv);
 
-	ColorProfiler cp("C:/Users/User/Documents/GitHub/human-activity-monitor/assets/haarcascade_frontalface_default.xml");
+	ColorProfiler cp("C:/Users/user/Documents/GitHub/human-activity-monitor/assets/haarcascade_frontalface_default.xml");
 
 	bool first = true;
 
@@ -47,38 +47,37 @@ int main(int, char**)
 			cout << "Cannot read a frame from video stream" << endl;
 			break;
 		}
-		// Capture face and extract hue values only on the first frame
+/**************************************************************************************
+******** Hue Extraction ***************************************************************
+**************************************************************************************/
 		if (first)
 		{
 			hsv->passband = cp.determine_colors(frame);
 			first = false;
 		}
-        // Need center point of face
+		
+		
+		
+        // Need center point of face for later tracking of frequency
         
         
-		// Find the regions
+/**************************************************************************************
+******** Filter, Find, and Store Regions **********************************************
+**************************************************************************************/
 		std::vector<Region> regions = regionFinder.find(frame);
 
-		// Display those Regions
+/**************************************************************************************
+******** Display Regions **************************************************************
+**************************************************************************************/
 		Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
 		for (Region region : regions)
 		{
 			region.draw(drawing);
-		}
+		}		
+		 
 /**************************************************************************************
-******** Remaining Logic***************************************************************
-**************************************************************************************/		
-		// Average two hand center points to reduce to a single center point
-		// Compare averaged center point to face center point
-		// if handCenter > faceCenter then
-		// begin frame count
-		// wait for handCenter > faceCenter again
-		// find lowest y amplitude over saved frames
-		// calculate velocity
-		// save as completed cycle towards frequency
-		// Ship data to GUI
-
-		// Display the bounding rects on the original frame ** Should only be hands
+******** Display rectangles around bounded objects ************************************
+**************************************************************************************/
 		for (size_t i = 0; i < regions.size(); i++)
 		{
 			Rect r = boundingRect(regions[i].contour);
@@ -87,6 +86,46 @@ int main(int, char**)
 
 		imshow("frame", frame);
 		imshow("edges", drawing);
+		
+		
+/**************************************************************************************
+******** Object Tracking***************************************************************
+**************************************************************************************/
+        float handCenterX = 0;                                // Averaged hands center point X coordinate	
+        float handCenterY = 0;                                // Averaged hands center point Y coordinate
+        Mat drawCenter = Mat::zeros(frame.size(), CV_8UC3);   // Temp matrix for displaying calculated center point	
+		    for (Region region : regions)                     // for each region add the y vals and x vals
+		    {                                                 
+		       handCenterY += region.center.y;                // add regions y vals
+		       handCenterX += region.center.x;                // add regions x vals
+		    }                                                 
+		    handCenterY = (handCenterY/(regions.size()));     // Calculate the averages of each coordinate
+		    handCenterX = (handCenterX/(regions.size()));     // Calculate the averages of each coordinate
+		// Display handCenter for troubleshooting
+		    Region handCenterObj;
+		    handCenterObj.center = Point2f (handCenterY, handCenterX);   // Set the center point for the object to be displayed
+		    handCenterObj.draw(drawCenter);                   // Draw the center point
+		    imshow("Center", drawCenter);                     // Display the center point
+		     
+		
+		// Compare averaged center point to face center point
+		   // if handCenter > faceCenter
+		   // {
+		      // While(handCenterY < faceCenterY)   // waits for hand amplitude to rise above faceCenter to complete cycle
+		      // {
+		      //    store detected dhand points as collection of paired save points, one element per each pair of points
+		      //    this way we know how many frames occured in this cycle. 
+		      // }
+	       // }
+/*************************************************************************************
+******** Output Metrics **************************************************************
+*************************************************************************************/
+		// find lowest y amplitude over saved frames
+		// calculate velocity
+		// save as completed cycle towards frequency
+		// Ship data to GUI
+
+
 
 		//wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
 		if (waitKey(30) == 27)
