@@ -40,7 +40,6 @@ int main(int, char**)
 	while (1)
 	{
 		Mat frame;   // Use for each individual frame
-		
 		if (!cap.read(frame)) // read a new frame from video
 		{
 			//if not success, break loop
@@ -93,17 +92,16 @@ int main(int, char**)
 **************************************************************************************/
         Point2f handCenter(0,0);                              // Averaged hand coordinate point
         Mat drawCenter = Mat::zeros(frame.size(), CV_8UC3);   // Temp matrix for displaying calculated center point	
-		    for (Region region : regions)                     // for each region add the y vals and x vals
-		    {                                                 
-		       handCenter += region.center;                   // add coordinate regions
-		    }                                                 
-		    handCenter = Point2f(static_cast<float>(handCenter.x/(regions.size())),   // Calculate the averages of each coordinate 
-		                         static_cast<float>(handCenter.y/(regions.size())));     
-		// Display handCenter for troubleshooting
-		    Region handCenterObj;
-		    handCenterObj.center = Point2f(handCenter);       // Set the center point for the object to be displayed
-		    handCenterObj.draw(drawCenter);                   // Draw the center point
-		    imshow("Center", drawCenter);                     // Display the center point
+		for (Region region : regions)                         // for each region add the y vals and x vals
+		{                                                     
+		   handCenter += region.center;                       // add coordinate regions
+		}                                                     
+		handCenter = Point2f(static_cast<float>(handCenter.y/(regions.size())),   // Calculate the averages of each coordinate 
+		                     static_cast<float>(handCenter.x/(regions.size())));     
+		Region handCenterObj;                                 // Display handCenter for troubleshooting
+		handCenterObj.center = Point2f(handCenter);           // Set the center point for the object to be displayed
+		handCenterObj.draw(drawCenter);                       // Draw the center point
+		imshow("Center", drawCenter);                         // Display the center point
 		     
 		
 		// Compare averaged center point to face center point
