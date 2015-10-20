@@ -12,7 +12,7 @@ int main(int, char**)
 {
 	// Capture video from webcam or prerecorded file
 	// "C:/Users/User/Desktop/flap_blur.avi"
-	VideoCapture cap("C:/Users/user/Desktop/flap_blur.avi"); //capture the video from webcam
+	VideoCapture cap("C:/Users/brian_000/Desktop/flap_blur.avi"); //capture the video from webcam
 	if (!cap.isOpened())  // if not success, exit program
 	{
 		cout << "Cannot open the web cam" << endl;
@@ -32,7 +32,7 @@ int main(int, char**)
 	HSVFilter* hsv = new HSVFilter();
 	regionFinder.add_filter(hsv);
 
-	ColorProfiler cp("C:/Users/user/Documents/GitHub/human-activity-monitor/assets/haarcascade_frontalface_default.xml");
+	ColorProfiler cp("C:/Users/brian_000/Documents/GitHub/human-activity-monitor/assets/haarcascade_frontalface_default.xml");
 
 	bool first = true;
 
@@ -91,19 +91,17 @@ int main(int, char**)
 /**************************************************************************************
 ******** Object Tracking***************************************************************
 **************************************************************************************/
-        float handCenterX = 0;                                // Averaged hands center point X coordinate	
-        float handCenterY = 0;                                // Averaged hands center point Y coordinate
+        Point2f handCenter(0,0);                              // Averaged hand coordinate point
         Mat drawCenter = Mat::zeros(frame.size(), CV_8UC3);   // Temp matrix for displaying calculated center point	
 		    for (Region region : regions)                     // for each region add the y vals and x vals
 		    {                                                 
-		       handCenterY += region.center.y;                // add regions y vals
-		       handCenterX += region.center.x;                // add regions x vals
+		       handCenter += region.center;                   // add coordinate regions
 		    }                                                 
-		    handCenterY = (handCenterY/(regions.size()));     // Calculate the averages of each coordinate
-		    handCenterX = (handCenterX/(regions.size()));     // Calculate the averages of each coordinate
+		    handCenter = Point2f(static_cast<float>(handCenter.x/(regions.size())),   // Calculate the averages of each coordinate 
+		                         static_cast<float>(handCenter.y/(regions.size())));     
 		// Display handCenter for troubleshooting
 		    Region handCenterObj;
-		    handCenterObj.center = Point2f (handCenterY, handCenterX);   // Set the center point for the object to be displayed
+		    handCenterObj.center = Point2f(handCenter);       // Set the center point for the object to be displayed
 		    handCenterObj.draw(drawCenter);                   // Draw the center point
 		    imshow("Center", drawCenter);                     // Display the center point
 		     
