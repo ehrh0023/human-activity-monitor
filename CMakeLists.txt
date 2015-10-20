@@ -11,15 +11,15 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 #########################################################
-# FIND fuzzylite
+# FIND OPENCV
 #########################################################
-find_package(fuzzylite REQUIRED)
-include_directories(${FUZZYLITE_INCLUDE_DIRS})
-link_directories(${FUZZYLITE_LIBRARY_DIRS})
-add_definitions(${FUZZYLITE_DEFINITIONS})
-if(NOT GLUT_FOUND)
-    message(ERROR " fuzzylite not found!")
-endif(NOT GLUT_FOUND)
+find_package(opencv REQUIRED)
+include_directories(${OPENCV_INCLUDE_DIRS})
+link_directories(${OPENCV_LIBRARY_DIRS})
+add_definitions(${OPENCV_DEFINITIONS})
+if(NOT OPENCV_FOUND)
+    message(ERROR " OpenCV not found!")
+endif(NOT OPENCV_FOUND)
 
 file(GLOB_RECURSE HUMAN_ACTIVITY_MONITOR_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
@@ -59,4 +59,4 @@ endforeach()
 
 ADD_EXECUTABLE(human-activity-monitor ${HUMAN_ACTIVITY_MONITOR_FILES})
 
-target_link_libraries(flaming-archer ${FUZZYLITE_LIBRARIES})
+target_link_libraries(flaming-archer ${OPENCV_LIBRARIES})
