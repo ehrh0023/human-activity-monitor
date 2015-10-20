@@ -22,17 +22,17 @@ int main(int, char**)
 	// Matrix for image outputs 
 	Mat frame;
 
-	//Capture a temporary image from the camera
+	//Capture a temporary image from the camera for sizing
 	Mat imgTmp;
 	cap.read(imgTmp);
-
+                                             
 	// Create an region finder
 	RegionFinder regionFinder;
 	// Add an HSV filter
 	HSVFilter* hsv = new HSVFilter();
 	regionFinder.add_filter(hsv);
 
-	ColorProfiler cp("C:/Users/User/Desktop/haarcascade_frontalface_default.xml");
+	ColorProfiler cp("C:/Users/User/Documents/GitHub/human-activity-monitor/assets/haarcascade_frontalface_default.xml");
 
 	bool first = true;
 
@@ -47,13 +47,15 @@ int main(int, char**)
 			cout << "Cannot read a frame from video stream" << endl;
 			break;
 		}
-		
+		// Capture face and extract hue values only on the first frame
 		if (first)
 		{
 			hsv->passband = cp.determine_colors(frame);
 			first = false;
 		}
-
+        // Need center point of face
+        
+        
 		// Find the regions
 		std::vector<Region> regions = regionFinder.find(frame);
 
@@ -63,8 +65,20 @@ int main(int, char**)
 		{
 			region.draw(drawing);
 		}
+/**************************************************************************************
+******** Remaining Logic***************************************************************
+**************************************************************************************/		
+		// Average two hand center points to reduce to a single center point
+		// Compare averaged center point to face center point
+		// if handCenter > faceCenter then
+		// begin frame count
+		// wait for handCenter > faceCenter again
+		// find lowest y amplitude over saved frames
+		// calculate velocity
+		// save as completed cycle towards frequency
+		// Ship data to GUI
 
-		// Display thei bounding rects on the original frame
+		// Display the bounding rects on the original frame ** Should only be hands
 		for (size_t i = 0; i < regions.size(); i++)
 		{
 			Rect r = boundingRect(regions[i].contour);

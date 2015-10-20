@@ -20,6 +20,8 @@ HSVRange ColorProfiler::determine_colors(Mat img)
 	// Find the faces
 	std::vector<Rect> faces;
 	face_cascade.detectMultiScale(gray, faces, 1.3, 5);
+	
+	// Determine center point of head
 
 	// Display the found faces
 	for (Rect point : faces)
