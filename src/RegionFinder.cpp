@@ -35,7 +35,7 @@ std::vector<Region> RegionFinder::find(Mat image)
 	// Find contours
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
-	findContours(canny_output, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE, Point(0, 0));
+	findContours(canny_output, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);//, Point(0, 0));
 
 	// Determine the Regions
 	vector<Region> regions(contours.size());
@@ -43,10 +43,13 @@ std::vector<Region> RegionFinder::find(Mat image)
 	{
 		Region object;
 		object.contour = contours[i];
-		object.moment = moments(contours[i], false);
+		object.moment = moments(contours[i], false);    
+		if (object.moment.m00 != 0)   // This is a wrapper at this point sometimes m00 comes out to be 0 and we later divide by 0 then
+	    {                             // Therefore it is a preventative
 		object.center = Point2f(static_cast<float>(object.moment.m10 / object.moment.m00), 
 									static_cast<float>(object.moment.m01 / object.moment.m00));
-		regions.push_back(object);
+		regions.push_back(object);	
+	    }
 	}
 
 	return regions;
