@@ -13,8 +13,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    OpenCVViewer.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    OpenCVViewer.h
 
 FORMS    += mainwindow.ui
