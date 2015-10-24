@@ -122,6 +122,8 @@ Thanks to:
 interface IEnumPIDMap : public IUnknown
 {
 public:
+	virtual ~IEnumPIDMap(){}
+	
     virtual HRESULT STDMETHODCALLTYPE Next(
         /* [in] */ ULONG cRequest,
         /* [size_is][out][in] */ PID_MAP *pPIDMap,
@@ -138,6 +140,8 @@ public:
 
 interface IMPEG2PIDMap : public IUnknown
 {
+	virtual ~IMPEG2PIDMap(){}
+	
     virtual HRESULT STDMETHODCALLTYPE MapPID(
         /* [in] */ ULONG culPID,
         /* [in] */ ULONG *pulPID,
@@ -226,6 +230,8 @@ DEFINE_GUID(PIN_CATEGORY_PREVIEW,0xfb6c4282,0x0353,0x11d1,0x90,0x5f,0x00,0x00,0x
 
 interface ISampleGrabberCB : public IUnknown
 {
+	virtual ~ISampleGrabberCB(){}
+	
     virtual HRESULT STDMETHODCALLTYPE SampleCB(
         double SampleTime,
         IMediaSample *pSample) = 0;
@@ -238,6 +244,8 @@ interface ISampleGrabberCB : public IUnknown
 
 interface ISampleGrabber : public IUnknown
 {
+	virtual ~ISampleGrabber(){}
+	
     virtual HRESULT STDMETHODCALLTYPE SetOneShot(
         BOOL OneShot) = 0;
 
