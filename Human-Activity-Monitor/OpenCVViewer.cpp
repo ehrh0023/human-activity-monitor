@@ -1,12 +1,35 @@
 #include "OpenCVViewer.h"
 #include <QtWidgets>
 #include <opencv2/opencv.hpp>
+#include <stdexcept>
 
 OpenCVViewer::OpenCVViewer(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent),
+    cap("../assets/flap_blur.avi")
 {
+    timer = new QTimer(this);
+    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(display_scene()));
+
+    if (!cap.isOpened())  // if not success, throw exception
+    {
+        throw std::runtime_error("Cannot open the web cam");
+    }
+    timer->start(30);
 }
 
+
+void OpenCVViewer::display_scene()
+{
+    cv::Mat frame;   // Use for each individual frame
+    if (!cap.read(frame)) // read a new frame from video
+    {
+        //if not success, break loop
+        std::cout << "Cannot read a frame from video stream" << endl;
+        return;
+    }
+
+    showImage(frame);
+}
 
 bool OpenCVViewer::showImage( cv::Mat image )
 {

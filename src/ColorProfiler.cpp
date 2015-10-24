@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "ColorProfiler.h"
 using namespace cv;
 
@@ -7,7 +8,7 @@ ColorProfiler::ColorProfiler(std::string const& filename):
 	if (face_cascade.empty())
 	{
 		std::string err_msg = "Face Cascade " + filename + " could not be loaded";
-		throw std::exception(err_msg.c_str());
+        throw std::runtime_error(err_msg.c_str());
 	}
 }
 
@@ -24,8 +25,9 @@ HSVRange ColorProfiler::determine_colors(Mat img)
 	// Determine center point of head
 
 	// Display the found faces
-	for (Rect point : faces)
+    for (int i = 0; i < faces.size(); i++)
 	{
+        Rect point = faces[i];
 		rectangle(img, point, Scalar(255, 0, 0), 2);
 
 		int minY = point.height * 0.25 + point.y;

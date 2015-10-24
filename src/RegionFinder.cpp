@@ -23,8 +23,9 @@ std::vector<Region> RegionFinder::find(Mat image)
 {
 	// Filter the image
 	Mat filtered_img = image;
-	for (Filter* filter : filters)
+    for (int i = 0; i < filters.size(); i++)
 	{
+        Filter* filter = filters[i];
 		filtered_img = filter->filter(filtered_img);
 	}
 

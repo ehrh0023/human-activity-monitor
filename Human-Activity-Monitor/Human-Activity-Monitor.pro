@@ -5,9 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
-QMAKE_CXXFLAGS += $$(CXXFLAGS)
-QMAKE_CFLAGS += $$(CFLAGS)
-QMAKE_LFLAGS += $$(LDFLAGS)
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -24,8 +22,22 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../lib/opencv/build/mingw32/lib/ -lopencv_ts300
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../lib/opencv/build/mingw32/lib/ -lopencv_ts300d
-
+win32: LIBS += -L$$PWD/../lib/opencv/build/mingw32/bin/ -lopencv_calib3d300 \
+                                                        -lopencv_core300 \
+                                                        -lopencv_features2d300 \
+                                                        -lopencv_flann300 \
+                                                        -lopencv_highgui300 \
+                                                        -lopencv_imgcodecs300 \
+                                                        -lopencv_imgproc300 \
+                                                        -lopencv_ml300 \
+                                                        -lopencv_objdetect300 \
+                                                        -lopencv_photo300 \
+                                                        -lopencv_shape300 \
+                                                        -lopencv_stitching300 \
+                                                        -lopencv_superres300 \
+                                                        -lopencv_video300 \
+                                                        -lopencv_videoio300 \
+                                                        -lopencv_videostab300 \
+                                                        -lopencv_ffmpeg300
 INCLUDEPATH += $$PWD/../lib/opencv/build/include
 DEPENDPATH += $$PWD/../lib/opencv/build/include
