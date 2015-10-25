@@ -24,7 +24,7 @@ void OpenCVViewer::display_scene()
     if (!cap.read(frame)) // read a new frame from video
     {
         //if not success, break loop
-        std::cout << "Cannot read a frame from video stream" << endl;
+        std::cout << "Cannot read a frame from video stream" << std::endl;
         return;
     }
 
@@ -34,6 +34,8 @@ void OpenCVViewer::display_scene()
 bool OpenCVViewer::showImage( cv::Mat image )
 {
     image.copyTo(original_img);
+
+    //cv::resize(original_img, original_img, cv::Size(size().width(), size().height()));
 
     if( original_img.channels() == 3)
         render_img = QImage((const unsigned char*)(original_img.data),
