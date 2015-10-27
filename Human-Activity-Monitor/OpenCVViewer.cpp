@@ -5,7 +5,7 @@
 
 OpenCVViewer::OpenCVViewer(QWidget *parent) :
     QWidget(parent),
-    cap("../assets/flap_blur.avi")
+    cap(0) //"../assets/flap_blur.avi"
 {
     timer = new QTimer(this);
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(display_scene()));
@@ -35,7 +35,7 @@ bool OpenCVViewer::showImage( cv::Mat image )
 {
     image.copyTo(original_img);
 
-    //cv::resize(original_img, original_img, cv::Size(size().width(), size().height()));
+    cv::resize(original_img, original_img, cv::Size(size().width(), size().height()));
 
     if( original_img.channels() == 3)
         render_img = QImage((const unsigned char*)(original_img.data),
