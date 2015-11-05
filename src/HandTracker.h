@@ -7,14 +7,17 @@
 class HandTracker
 {
 public:
-	HandTracker(int cam_id = 0);
-	HandTracker(std::string file_name);
+	HandTracker(int cam_id);
+	HandTracker(std::string file_name = "C:/Users/brian_000/Desktop/flap_blur.avi");
 	~HandTracker();
 
 	void switch_source(int cam_id);
 	void switch_source(std::string file_name);
 	void update();
 	int  run();
+	
+	double distance;
+	int frames;
 private:
 	cv::VideoCapture cap;
 	RegionFinder regionFinder;

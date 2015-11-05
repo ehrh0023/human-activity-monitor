@@ -12,8 +12,10 @@ HandTracker::HandTracker(int cam_id):
     cap(cam_id),
     regionFinder(),
     first(true),
-    cp("C:/Users/Dennis/Documents/GitHub/github.umn.edu/human-activity-monitor/assets/haarcascade_frontalface_default.xml"),
-    hsv(new HSVFilter())
+    cp("C:/Users/brian_000/Documents/GitHub/github.umn.edu/human-activity-monitor/assets/haarcascade_frontalface_default.xml"),
+    hsv(new HSVFilter()),
+    distance(0),
+    frames(1)
 {
     if (!cap.isOpened())  // if not success, throw exception
     {
@@ -28,8 +30,10 @@ HandTracker::HandTracker(std::string file_name) :
     cap(file_name),
     regionFinder(),
     first(true),
-    cp("C:/Users/User/Documents/GitHub/human-activity-monitor/assets/haarcascade_frontalface_default.xml"),
-    hsv(new HSVFilter())
+    cp("C:/Users/brian_000/Documents/GitHub/human-activity-monitor/assets/haarcascade_frontalface_default.xml"),
+    hsv(new HSVFilter()),
+    distance(0),
+    frames(0)
 {
     if (!cap.isOpened())  // if not success, throw exception
     {
@@ -111,6 +115,9 @@ void HandTracker::update()
     **************************************************************************************/
     Point2f handCenter(0, 0);                             // Averaged hand coordinate point
     Mat drawCenter = Mat::zeros(frame.size(), CV_8UC3);   // Temp matrix for displaying calculated center point
+    double distx = 0;
+    double disty = 0;
+    double velocity = 0;
     for (int i = 0; i < regions.size(); i++)              // for each region add the y vals and x vals
     {
         Region region = regions[i];
@@ -119,9 +126,25 @@ void HandTracker::update()
     handCenter.y /= ((regions.size()) / 2 + 1);           // This gives accurate x and y vals for the calculated center points
     handCenter.x /= ((regions.size()) / 2 + 1);           // This is a wrapper at this point
     Region handCenterObj;                                 // Display handCenter for troubleshooting
+    distx = handCenter.x - handCenterObj.center.x;        // Calculate distance in x coordinate
+    disty = handCenter.y - handCenterObj.center.y;        // Calculate distance in y coordinate
+    
     handCenterObj.center = Point2f(handCenter);           // Set the center point for the object to be displayed
     handCenterObj.draw(drawCenter);                       // Draw the center point
     imshow("Center", drawCenter);                         // Display the center point
+    
+    // calc Velocity
+    distance += ((distx + disty) / 2);                    // Average x and y distances for a single distance
+    if (frames == 30)                                     // Want 30 frames to establish seconds
+    {
+	velocity = distance / 30;                             // This gives distance per second or pixels per second
+    cout << velocity << endl;
+    frames = 0;
+    distance = 0;                                         // Average distance per 30 frames
+    }
+    frames++;                                             // Track frames over time
+    
+    
 
     // Compare averaged center point to face center point
     // if handCenter > faceCenter
