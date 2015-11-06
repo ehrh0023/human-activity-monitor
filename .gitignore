@@ -11,6 +11,7 @@
 # Fortran module files
 *.mod
 
-/build*
+/build*/*
+!build/readme.txt
 
 *Human-Activity-Monitor.pro.user*

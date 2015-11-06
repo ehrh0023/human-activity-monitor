@@ -1,0 +1,1 @@
+Building requires cMake. Build into this folder so that the hardcoded file paths are accurate
