@@ -65,16 +65,16 @@ ADD_EXECUTABLE(human-activity-monitor ${HUMAN_ACTIVITY_MONITOR_FILES})
 
 target_link_libraries(human-activity-monitor ${OpenCV_LIBS})
 
-if(WIN32)
-	ADD_CUSTOM_COMMAND (TARGET human-activity-monitor	POST_BUILD
-		#Debug
-		COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_DIR}/../bin/opencv_world300.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug
-		COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_DIR}/../bin/opencv_ffmpeg300.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug
-		
-		#Release
-		COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_DIR}/../bin/opencv_world300d.dll ${CMAKE_CURRENT_BINARY_DIR}/Release
-		COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_DIR}/../bin/opencv_ffmpeg300.dll ${CMAKE_CURRENT_BINARY_DIR}/Release
-		
-		COMMENT "Copying OpenCV binaries" VERBATIM
-	)
-endif()
+#if(WIN32)
+#	ADD_CUSTOM_COMMAND (TARGET human-activity-monitor	POST_BUILD
+#		#Debug
+#		COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_DIR}/../bin/opencv_world2410.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug
+#		COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_DIR}/../bin/opencv_ffmpeg2410.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug
+#		
+#		#Release
+#		COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_DIR}/../bin/opencv_world2410d.dll ${CMAKE_CURRENT_BINARY_DIR}/Release
+#		COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_DIR}/../bin/opencv_ffmpeg2410.dll ${CMAKE_CURRENT_BINARY_DIR}/Release
+#		
+#		COMMENT "Copying OpenCV binaries" VERBATIM
+#	)
+#endif()

@@ -69,10 +69,8 @@ void HandTracker::update()
         return;
     }
 
-    /**************************************************************************************
-    ******** Hue Extraction ***************************************************************
-    **************************************************************************************/
-    if (first)
+    // Initialize HSV profile
+	if (first)
     {
         hsv->passband = cp.determine_colors(frame);
         first = false;
@@ -81,15 +79,11 @@ void HandTracker::update()
     // Need center point of face for later tracking of frequency
 
 
-    /**************************************************************************************
-    ******** Filter, Find, and Store Regions **********************************************
-    **************************************************************************************/
-    std::vector<Region> regions = regionFinder.find(frame);
+    // Find the Regions
+	std::vector<Region> regions = regionFinder.find(frame);
 
-    /**************************************************************************************
-    ******** Display Regions **************************************************************
-    **************************************************************************************/
-    Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
+    // Display Regions
+	Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
 
     for (int i = 0; i < regions.size(); i++)
     {
@@ -97,13 +91,15 @@ void HandTracker::update()
         region.draw(drawing);
     }
 
-    /**************************************************************************************
-    ******** Display rectangles around bounded objects ************************************
-    **************************************************************************************/
-    for (int i = 0; i < regions.size(); i++)
+	// Display region bounds
+    for (Region region : regions)
     {
-        Rect r = boundingRect(regions[i].contour);
-        rectangle(frame, Point(r.x, r.y), Point(r.x + r.width, r.y + r.height), Scalar(0, 255, 0), 2);
+		auto reg = region.contour;
+		if (!reg.empty())
+		{
+			Rect r = boundingRect(reg);
+			rectangle(frame, r.tl(), r.br(), Scalar(0, 255, 0), 2);
+		}
     }
 
     imshow("frame", frame);
