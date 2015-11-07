@@ -7,8 +7,8 @@
 class HandTracker
 {
 public:
-	HandTracker(int cam_id);
-	HandTracker(std::string file_name = "C:/Users/brian_000/Desktop/flap_blur.avi");
+	HandTracker(int cam_id = 0);
+	HandTracker(std::string file_name);
 	~HandTracker();
 
 	void switch_source(int cam_id);

@@ -10,57 +10,12 @@ set(INSTALL_LIB_DIR lib ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
-#########################################################
-# Force Static Lib 
-# http://stackoverflow.com/questions/10113017/setting-the-msvc-runtime-in-cmake
-#########################################################
-
-macro(configure_msvc_runtime)
-  if(MSVC)
-    # Default to statically-linked runtime.
-    if("${MSVC_RUNTIME}" STREQUAL "")
-      set(MSVC_RUNTIME "static")
-    endif()
-    # Set compiler options.
-    set(variables
-      CMAKE_C_FLAGS_DEBUG
-      CMAKE_C_FLAGS_MINSIZEREL
-      CMAKE_C_FLAGS_RELEASE
-      CMAKE_C_FLAGS_RELWITHDEBINFO
-      CMAKE_CXX_FLAGS_DEBUG
-      CMAKE_CXX_FLAGS_MINSIZEREL
-      CMAKE_CXX_FLAGS_RELEASE
-      CMAKE_CXX_FLAGS_RELWITHDEBINFO
-    )
-    if(${MSVC_RUNTIME} STREQUAL "static")
-      message(STATUS
-        "MSVC -> forcing use of statically-linked runtime."
-      )
-      foreach(variable ${variables})
-        if(${variable} MATCHES "/MD")
-          string(REGEX REPLACE "/MD" "/MT" ${variable} "${${variable}}")
-        endif()
-      endforeach()
-    else()
-      message(STATUS
-        "MSVC -> forcing use of dynamically-linked runtime."
-      )
-      foreach(variable ${variables})
-        if(${variable} MATCHES "/MT")
-          string(REGEX REPLACE "/MT" "/MD" ${variable} "${${variable}}")
-        endif()
-      endforeach()
-    endif()
-  endif()
-endmacro()
-
-configure_msvc_runtime()
 
 #########################################################
 # FIND OPENCV
 #########################################################
 if(WIN32)
-  set(OpenCV_DIR "lib/opencv/x86/vc12/staticlib")
+  set(OpenCV_DIR "${CMAKE_SOURCE_DIR}/lib/opencv/x86/vc12/lib")
 else()
   set(OpenCV_DIR "/usr/lib/opencv")
 endif()
@@ -109,3 +64,17 @@ endforeach()
 ADD_EXECUTABLE(human-activity-monitor ${HUMAN_ACTIVITY_MONITOR_FILES})
 
 target_link_libraries(human-activity-monitor ${OpenCV_LIBS})
+
+if(WIN32)
+	ADD_CUSTOM_COMMAND (TARGET human-activity-monitor	POST_BUILD
+		#Debug
+		COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_DIR}/../bin/opencv_world300.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug
+		COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_DIR}/../bin/opencv_ffmpeg300.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug
+		
+		#Release
+		COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_DIR}/../bin/opencv_world300d.dll ${CMAKE_CURRENT_BINARY_DIR}/Release
+		COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_DIR}/../bin/opencv_ffmpeg300.dll ${CMAKE_CURRENT_BINARY_DIR}/Release
+		
+		COMMENT "Copying OpenCV binaries" VERBATIM
+	)
+endif()

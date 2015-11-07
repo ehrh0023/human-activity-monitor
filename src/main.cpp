@@ -1,11 +1,21 @@
 #include "HandTracker.h"
+#include <iostream>
+#include <stdexcept>
 
 int main(int, char**)
 {
-	// "C:/Users/User/Desktop/flap_blur.avi"
-	HandTracker app;
+	try
+	{
+		// "C:/Users/User/Desktop/flap_blur.avi"
+		HandTracker app("C:/Users/Dennis/Documents/GitHub/github.umn.edu/human-activity-monitor/assets/flap_blur.avi");
+		return app.run();
+	}
+	catch (std::exception* e)
+	{
+		std::cout << e->what();
+	}
 
-	return app.run();
+	return -1;
 }
 
 

@@ -12,7 +12,7 @@ HandTracker::HandTracker(int cam_id):
     cap(cam_id),
     regionFinder(),
     first(true),
-    cp("C:/Users/brian_000/Documents/GitHub/github.umn.edu/human-activity-monitor/assets/haarcascade_frontalface_default.xml"),
+    cp("C:/Users/Dennis/Documents/GitHub/github.umn.edu/human-activity-monitor/assets/haarcascade_frontalface_default.xml"),
     hsv(new HSVFilter()),
     distance(0),
     frames(1)
@@ -29,8 +29,8 @@ HandTracker::HandTracker(int cam_id):
 HandTracker::HandTracker(std::string file_name) :
     cap(file_name),
     regionFinder(),
-    first(true),
-    cp("C:/Users/brian_000/Documents/GitHub/human-activity-monitor/assets/haarcascade_frontalface_default.xml"),
+	first(true),
+	cp("C:/Users/Dennis/Documents/GitHub/github.umn.edu/human-activity-monitor/assets/haarcascade_frontalface_default.xml"),
     hsv(new HSVFilter()),
     distance(0),
     frames(0)
