@@ -1,15 +1,18 @@
 #include <opencv2/opencv.hpp>
+#include <cstdint>
+#include "../src/NaiveBayesClassifier.h"
 
 using namespace cv;
-using namespace ml;
+using namespace std;
 
+RNG rng(12345);
 int main(int, char**)
 {
-	Ptr<NormalBayesClassifier> classifier = NormalBayesClassifier::create();
+	NaiveBayesClassifier bayes;
 
 	for (int i = 1; i <= 11; ++i)
 	{
-		if (i == 3 || i == 7 || i == 8)
+		if (i == 3)
 			continue;
 
 		const std::string imgName = "C:/Users/Dennis/Desktop/Pictures/Unprocessed/pic";
@@ -18,46 +21,92 @@ int main(int, char**)
 		// read training image
 		std::string normfile = imgName + std::to_string(i) + ".jpg";
 		cv::Mat image = imread(normfile);
-		resize(image, image, Size(1280, 720));
-		cvtColor(image, image, CV_RGB2GRAY);
-		image.convertTo(image, CV_32S); // train expects a matrix of integers
-		image = image.reshape(0, image.rows*image.cols); // little trick number 2 convert your width x height, N channel image into a witdth*height row matrix by N columns, as each pixel should be considere as a training sample.
 
 		// read mask image
 		std::string maskfile = bwName + std::to_string(i) + ".jpg";
 		cv::Mat mask = imread(maskfile);
-		resize(mask, mask, Size(1280, 720));
-		cvtColor(mask, mask, CV_RGB2GRAY);
-		mask.convertTo(mask, CV_32S); // train expects a matrix of integers
-		mask = mask.reshape(0, image.rows*image.cols); // little trick number 2 convert your width x height, N channel image into a witdth*height row matrix by N columns, as each pixel should be considere as a training sample.
 
-		if (i == 1)
+		bayes.train(image, mask, true);
+	}
+
+	bayes.save("BayesPresetXYZ");
+
+	/*cv::Mat image = imread("C:/Users/Dennis/Desktop/Pictures/Unprocessed/pic4.jpg");
+
+	Mat* output = bayes.predict(image);
+
+	Mat imgThresholded = *output;
+	//morphological opening (removes small objects from the foreground)
+	//erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	//dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+	//morphological closing (removes small holes from the foreground)
+	//dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	//erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+	imshow("orig", image);
+	imshow("new", *output);
+
+
+	while(1)
+	{
+		//wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
+		if (waitKey(30) == 27)
 		{
-			Ptr<TrainData> td = TrainData::create(image, ROW_SAMPLE, mask);
-			classifier->train(td);
-		}
-		else
-		{
-			std::cout << i;
-			Ptr<TrainData> td = TrainData::create(image, ROW_SAMPLE, mask);
-			classifier->train(td, NormalBayesClassifier::UPDATE_MODEL);
+			break;
 		}
 	}
-	classifier->save("Test.xml");
-
-
-	//cv::Mat image = imread("C:/Users/Dennis/Desktop/Pictures/Unprocessed/pic4.jpg");
-	//resize(image, image, Size(1280, 720));
-	//cvtColor(image, image, CV_RGB2GRAY);
-	//image.convertTo(image, CV_32F); // train expects a matrix of integers
-	//image = image.reshape(0, image.rows*image.cols); // little trick number 2 convert your width x height, N channel image into a witdth*height row matrix by N columns, as each pixel should be considere as a training sample.
-
-	//Mat output(image.size(), CV_32F), outputProbs(image.size(), CV_32F);
+	*/
 	
-	Mat image(Size(1, 2), CV_32F);
-	image.data[0] = 1;
-	image.data[1] = 1;
-	classifier->predict(image);
+	VideoCapture cap(0);//"../assets/flap_blur.avi");
+	if (!cap.isOpened())  // check if we succeeded
+		return -1;
+	while (1)
+	{
+		Mat frame;
+		Mat frame_gray;
+		Mat canny_output;
+
+		vector<vector<Point> > contours;
+		vector<Vec4i> hierarchy;
+
+		if (!cap.read(frame)) // get a new frame from camera
+			break;
+
+		Mat* output = bayes.predict(frame);
+		Mat imgThresholded = *output;
+
+		//morphological opening (removes small objects from the foreground)
+		erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+		dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+		//morphological closing (removes small holes from the foreground)
+		dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+		erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+		findContours(imgThresholded, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE, Point(0, 0));
+
+		/// Draw contours
+		Mat drawing = Mat::zeros(imgThresholded.size(), CV_8UC3);
+		for (size_t i = 0; i < contours.size(); i++)
+		{
+			Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+			drawContours(drawing, contours, (int)i, color, 2, 8, hierarchy, 0, Point());
+		}
+
+		imshow("orig", frame);
+		imshow("edges", drawing);
+
+		if (!cap.read(frame)) // get a new frame from camera
+			break;
+
+		//wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
+		if (waitKey(30) == 27)
+		{
+			break;
+		}
+
+	}
 
 	return 0;
 }
