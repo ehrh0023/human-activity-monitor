@@ -3,6 +3,9 @@
 #include <iostream>
 #include <stdexcept>
 #include <opencv2/opencv.hpp>
+#include <iostream>
+#include <fstream>
+#include <algorithm>
 
 using namespace cv;
 using namespace std;
@@ -12,7 +15,7 @@ HandTracker::HandTracker(int cam_id):
     cap(cam_id),
     regionFinder(),
     first(true),
-    cp("C:/Users/Dennis/Documents/GitHub/github.umn.edu/human-activity-monitor/assets/haarcascade_frontalface_default.xml"),
+    cp("C:/Users/brian_000/Documents/GitHub/human-activity-monitor/assets/haarcascade_frontalface_default.xml"),
     hsv(new HSVFilter()),
     distance(0),
     frames(1)
@@ -30,10 +33,10 @@ HandTracker::HandTracker(std::string file_name) :
     cap(file_name),
     regionFinder(),
 	first(true),
-	cp("C:/Users/Dennis/Documents/GitHub/github.umn.edu/human-activity-monitor/assets/haarcascade_frontalface_default.xml"),
+	cp("C:/Users/brian_000/Documents/GitHub/human-activity-monitor/assets/haarcascade_frontalface_default.xml"),
     hsv(new HSVFilter()),
-    distance(0),
-    frames(0)
+    distance(0)
+    
 {
     if (!cap.isOpened())  // if not success, throw exception
     {
@@ -68,11 +71,13 @@ void HandTracker::update()
         cout << "Cannot read a frame from video stream" << endl;
         return;
     }
-
-    // Initialize HSV profile
+    ofstream outdata;                             //write variable
+    // Initialize HSV profile and data csv file
 	if (first)
     {
         hsv->passband = cp.determine_colors(frame);
+        outdata.open("Data.csv", ofstream::out);      // Clear CSV file on first frame
+        outdata.close();
         first = false;
     }
 
@@ -131,14 +136,19 @@ void HandTracker::update()
     
     // calc Velocity
     distance += ((distx + disty) / 2);                    // Average x and y distances for a single distance
+
+	outdata.open("Data.csv", ios::app);                   //open the file to write to
+	
     if (frames == 30)                                     // Want 30 frames to establish seconds
     {
-	velocity = distance / 30;                             // This gives distance per second or pixels per second
-    cout << velocity << endl;
-    frames = 0;
-    distance = 0;                                         // Average distance per 30 frames
+	   velocity = distance / 30;                          // This gives distance per second or pixels per second
+       cout << velocity << endl;
+       frames = 0;                                        // reset frame count
+       distance = 0;                                      // Average distance per 30 frames
+       outdata << velocity << endl;                       //Write data to .CSV file
     }
     frames++;                                             // Track frames over time
+    cout << frames << endl;
     
     
 
@@ -157,6 +167,9 @@ void HandTracker::update()
     // find lowest y amplitude over saved frames
     // calculate velocity
     // save as completed cycle towards frequency
+    
+ 	outdata.close();   // Close CSV file
+
     // Ship data to GUI
 
 }
