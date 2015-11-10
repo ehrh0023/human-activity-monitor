@@ -10,11 +10,8 @@ int main(int, char**)
 {
 	NaiveBayesClassifier bayes;
 
-	for (int i = 1; i <= 11; ++i)
+	for (int i = 1; i <= 12; ++i)
 	{
-		if (i == 3)
-			continue;
-
 		const std::string imgName = "C:/Users/Dennis/Desktop/Pictures/Unprocessed/pic";
 		const std::string bwName = "C:/Users/Dennis/Desktop/Pictures/BW/picbw";
 
@@ -57,24 +54,24 @@ int main(int, char**)
 		}
 	}
 	*/
-	
+
+	Mat frame;
+	Mat frame_gray;
+	Mat canny_output;
+
+	vector<vector<Point> > contours;
+	vector<Vec4i> hierarchy;
 	VideoCapture cap(0);//"../assets/flap_blur.avi");
 	if (!cap.isOpened())  // check if we succeeded
 		return -1;
 	while (1)
 	{
-		Mat frame;
-		Mat frame_gray;
-		Mat canny_output;
-
-		vector<vector<Point> > contours;
-		vector<Vec4i> hierarchy;
 
 		if (!cap.read(frame)) // get a new frame from camera
 			break;
 
-		Mat* output = bayes.predict(frame);
-		Mat imgThresholded = *output;
+		Mat imgThresholded;
+		bayes.predict(frame, imgThresholded);
 
 		//morphological opening (removes small objects from the foreground)
 		erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
