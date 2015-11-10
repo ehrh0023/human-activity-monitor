@@ -43,3 +43,16 @@ Mat HSVFilter::filter(Mat image)
 	erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 	return imgThresholded;
 }
+
+BayesFilter::BayesFilter(std::string filename)
+{
+	bayes.load(filename);
+}
+
+cv::Mat BayesFilter::filter(cv::Mat image)
+{
+	cv::Mat out;
+	bayes.predict(image, out);
+	return out;
+}
+

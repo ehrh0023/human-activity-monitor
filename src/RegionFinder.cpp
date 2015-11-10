@@ -19,7 +19,7 @@ RegionFinder::~RegionFinder()
 	}
 }
 
-std::vector<Region> RegionFinder::find(Mat image)
+void RegionFinder::find(Mat image, std::vector<Region>& regions)
 {
 	// Filter the image
 	Mat filtered_img = image;
@@ -39,7 +39,7 @@ std::vector<Region> RegionFinder::find(Mat image)
 	findContours(canny_output, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);//, Point(0, 0));
 
 	// Determine the Regions
-	vector<Region> regions(contours.size());
+	regions = vector<Region>(contours.size());
 	for (size_t i = 0; i < contours.size(); i++)
 	{
 		Region object;
@@ -52,8 +52,6 @@ std::vector<Region> RegionFinder::find(Mat image)
 		regions.push_back(object);	
 	    }
 	}
-
-	return regions;
 }
 
 void RegionFinder::add_filter(Filter* filter)

@@ -25,4 +25,5 @@ private:
 	ColorProfiler cp;
 	HSVFilter* hsv;
 	StatsGenerator stats;
+	cv::Mat frame;   // Use for each individual frame
 };

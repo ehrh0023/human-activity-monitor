@@ -16,7 +16,8 @@ HandTracker::HandTracker(int cam_id):
     first(true),
     cp("../assets/haarcascade_frontalface_default.xml"),
     hsv(new HSVFilter()),
-	stats()
+	stats(),
+	frame()
 {
     if (!cap.isOpened())  // if not success, throw exception
     {
@@ -33,7 +34,8 @@ HandTracker::HandTracker(std::string file_name) :
 	first(true),
 	cp("../assets/haarcascade_frontalface_default.xml"),
     hsv(new HSVFilter()),
-	stats()
+	stats(),
+	frame()
 {
     if (!cap.isOpened())  // if not success, throw exception
     {
@@ -61,7 +63,6 @@ void HandTracker::switch_source(std::string file_name)
 
 void HandTracker::update()
 {
-    Mat frame;   // Use for each individual frame
     if (!cap.read(frame)) // read a new frame from video
     {
         //if not success, break loop
@@ -80,7 +81,8 @@ void HandTracker::update()
 
 
     // Find the Regions
-	std::vector<Region> regions = regionFinder.find(frame);
+	std::vector<Region> regions;
+	regionFinder.find(frame, regions);
 	
     // Display Regions
 	Mat drawing = Mat::zeros(frame.size(), CV_8UC3);

@@ -27,7 +27,7 @@ struct RegionFinder
 	 * @param image to check
 	 * @return the found regions
 	 */
-	std::vector<Region> find(cv::Mat image);
+	void find(cv::Mat image, std::vector<Region>& regions);
 
 
 	/**

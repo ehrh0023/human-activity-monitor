@@ -2,6 +2,7 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include "HSVRange.h"
+#include "NaiveBayesClassifier.h"
 
 /**
  * @class Filter
@@ -34,5 +35,15 @@ struct HSVFilter : public Filter
 	 * @param window The image to filter
 	 * @return the HSV filtered image
 	 */
+	cv::Mat filter(cv::Mat image);
+};
+
+class BayesFilter : public Filter
+{
+	NaiveBayesClassifier bayes;
+
+public:
+	BayesFilter(std::string filename = "../assets/BayesPresetXYZ");
+
 	cv::Mat filter(cv::Mat image);
 };

@@ -17,9 +17,9 @@ public:
 	NaiveBayesClassifier();
 	void clear();
 
-	void train(cv::Mat& image, cv::Mat& mask, bool update = false);
+	void train(cv::Mat const& image, cv::Mat const& mask, bool update = false);
 
-	cv::Mat* predict(cv::Mat& image);
+	void predict(cv::Mat const& image, cv::Mat& output);
 
 	void save(std::string filename);
 	void load(std::string filename);

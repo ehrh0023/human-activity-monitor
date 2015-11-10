@@ -25,7 +25,7 @@ void NaiveBayesClassifier::clear()
 	}
 }
 
-void NaiveBayesClassifier::train(cv::Mat& image, cv::Mat& mask, bool update)
+void NaiveBayesClassifier::train(cv::Mat const& image, cv::Mat const& mask, bool update)
 {
 	if (!update)
 	{
@@ -64,15 +64,15 @@ void NaiveBayesClassifier::train(cv::Mat& image, cv::Mat& mask, bool update)
 	}
 }
 
-cv::Mat* NaiveBayesClassifier::predict(cv::Mat& image)
+void NaiveBayesClassifier::predict(cv::Mat const& image, cv::Mat& output)
 {
 	Mat imageXYZ;
 	image.convertTo(imageXYZ, CV_8UC3);
 	cvtColor(imageXYZ, imageXYZ, CV_RGB2XYZ);
 	uint8_t* pixelPtr = (uint8_t*)imageXYZ.data;
 
-	Mat* output = new Mat(imageXYZ.size(), CV_8UC1);
-	uint8_t* outPtr = (uint8_t*)output->data;
+	output = Mat(imageXYZ.size(), CV_8UC1);
+	uint8_t* outPtr = (uint8_t*)output.data;
 
 	int cn = imageXYZ.channels();
 
@@ -102,7 +102,6 @@ cv::Mat* NaiveBayesClassifier::predict(cv::Mat& image)
 			}
 		}
 	}
-	return output;
 }
 
 void NaiveBayesClassifier::save(std::string filename)
