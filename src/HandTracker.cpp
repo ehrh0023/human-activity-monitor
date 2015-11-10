@@ -10,15 +10,13 @@
 using namespace cv;
 using namespace std;
 
-
 HandTracker::HandTracker(int cam_id):
     cap(cam_id),
     regionFinder(),
     first(true),
-    cp("C:/Users/brian_000/Documents/GitHub/human-activity-monitor/assets/haarcascade_frontalface_default.xml"),
+    cp("../assets/haarcascade_frontalface_default.xml"),
     hsv(new HSVFilter()),
-    distance(0),
-    frames(1)
+	stats()
 {
     if (!cap.isOpened())  // if not success, throw exception
     {
@@ -33,10 +31,9 @@ HandTracker::HandTracker(std::string file_name) :
     cap(file_name),
     regionFinder(),
 	first(true),
-	cp("C:/Users/brian_000/Documents/GitHub/human-activity-monitor/assets/haarcascade_frontalface_default.xml"),
+	cp("../assets/haarcascade_frontalface_default.xml"),
     hsv(new HSVFilter()),
-    distance(0)
-    
+	stats()
 {
     if (!cap.isOpened())  // if not success, throw exception
     {
@@ -71,13 +68,11 @@ void HandTracker::update()
         cout << "Cannot read a frame from video stream" << endl;
         return;
     }
-    ofstream outdata;                             //write variable
+
     // Initialize HSV profile and data csv file
 	if (first)
     {
         hsv->passband = cp.determine_colors(frame);
-        outdata.open("Data.csv", ofstream::out);      // Clear CSV file on first frame
-        outdata.close();
         first = false;
     }
 
@@ -86,10 +81,9 @@ void HandTracker::update()
 
     // Find the Regions
 	std::vector<Region> regions = regionFinder.find(frame);
-
+	
     // Display Regions
 	Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
-
     for (int i = 0; i < regions.size(); i++)
     {
         Region region = regions[i];
@@ -110,68 +104,7 @@ void HandTracker::update()
     imshow("frame", frame);
     imshow("edges", drawing);
 
-
-    /**************************************************************************************
-    ******** Object Tracking***************************************************************
-    **************************************************************************************/
-    Point2f handCenter(0, 0);                             // Averaged hand coordinate point
-    Mat drawCenter = Mat::zeros(frame.size(), CV_8UC3);   // Temp matrix for displaying calculated center point
-    double distx = 0;
-    double disty = 0;
-    double velocity = 0;
-    for (int i = 0; i < regions.size(); i++)              // for each region add the y vals and x vals
-    {
-        Region region = regions[i];
-        handCenter += region.center;                      // add coordinate regions
-    }
-    handCenter.y /= ((regions.size()) / 2 + 1);           // This gives accurate x and y vals for the calculated center points
-    handCenter.x /= ((regions.size()) / 2 + 1);           // This is a wrapper at this point
-    Region handCenterObj;                                 // Display handCenter for troubleshooting
-    distx = handCenter.x - handCenterObj.center.x;        // Calculate distance in x coordinate
-    disty = handCenter.y - handCenterObj.center.y;        // Calculate distance in y coordinate
-    
-    handCenterObj.center = Point2f(handCenter);           // Set the center point for the object to be displayed
-    handCenterObj.draw(drawCenter);                       // Draw the center point
-    imshow("Center", drawCenter);                         // Display the center point
-    
-    // calc Velocity
-    distance += ((distx + disty) / 2);                    // Average x and y distances for a single distance
-
-	outdata.open("Data.csv", ios::app);                   //open the file to write to
-	
-    if (frames == 30)                                     // Want 30 frames to establish seconds
-    {
-	   velocity = distance / 30;                          // This gives distance per second or pixels per second
-       cout << velocity << endl;
-       frames = 0;                                        // reset frame count
-       distance = 0;                                      // Average distance per 30 frames
-       outdata << velocity << endl;                       //Write data to .CSV file
-    }
-    frames++;                                             // Track frames over time
-    cout << frames << endl;
-    
-    
-
-    // Compare averaged center point to face center point
-    // if handCenter > faceCenter
-    // {
-    // While(handCenterY < faceCenterY)   // waits for hand amplitude to rise above faceCenter to complete cycle
-    // {
-    //    store detected hand points as collection of paired save points, one element per each pair of points
-    //    this way we know how many frames occured in this cycle.
-    // }
-    // }
-    /*************************************************************************************
-    ******** Output Metrics **************************************************************
-    *************************************************************************************/
-    // find lowest y amplitude over saved frames
-    // calculate velocity
-    // save as completed cycle towards frequency
-    
- 	outdata.close();   // Close CSV file
-
-    // Ship data to GUI
-
+	stats.update(frame, regions);
 }
 
 int HandTracker::run()

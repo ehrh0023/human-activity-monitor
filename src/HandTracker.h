@@ -3,6 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include "RegionFinder.h"
 #include "ColorProfiler.h"
+#include "StatsGenerator.h"
 
 class HandTracker
 {
@@ -16,8 +17,6 @@ public:
 	void update();
 	int  run();
 	
-	double distance;
-	int frames;
 private:
 	cv::VideoCapture cap;
 	RegionFinder regionFinder;
@@ -25,4 +24,5 @@ private:
 
 	ColorProfiler cp;
 	HSVFilter* hsv;
+	StatsGenerator stats;
 };
