@@ -15,7 +15,11 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 # FIND OPENCV
 #########################################################
 if(WIN32)
-  set(OpenCV_DIR "${CMAKE_SOURCE_DIR}/lib/opencv/x86/vc12/lib")
+	if((${MSVC_VERSION} EQUAL 1900) OR (${MSVC_VERSION} GREATER 1900))
+		set(OpenCV_DIR "${CMAKE_SOURCE_DIR}/lib/opencv/x86/vc14/lib")
+	else()
+		set(OpenCV_DIR "${CMAKE_SOURCE_DIR}/lib/opencv/x86/vc12/lib")
+	endif()
 else()
   set(OpenCV_DIR "/usr/lib/opencv")
 endif()
