@@ -37,13 +37,3 @@ struct HSVFilter : public Filter
 	 */
 	cv::Mat filter(cv::Mat image);
 };
-
-class BayesFilter : public Filter
-{
-	NaiveBayesClassifier bayes;
-
-public:
-	BayesFilter(std::string filename = "../assets/BayesPresetXYZ");
-
-	cv::Mat filter(cv::Mat image);
-};

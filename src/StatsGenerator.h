@@ -4,6 +4,10 @@
 #include "Region.h"
 #include "ColorProfiler.h"
 
+/**
+ * @class StatsGenerator
+ * @brief Creates frequency statistics between frame movements 
+ */
 class StatsGenerator
 {
 public:

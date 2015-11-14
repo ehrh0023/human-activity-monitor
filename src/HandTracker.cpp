@@ -13,7 +13,6 @@ using namespace std;
 HandTracker::HandTracker(int cam_id):
     cap(cam_id),
     regionFinder(),
-    first(true),
 	stats()
 {
     if (!cap.isOpened())  // if not success, throw exception
@@ -28,7 +27,6 @@ HandTracker::HandTracker(int cam_id):
 HandTracker::HandTracker(std::string file_name) :
     cap(file_name),
     regionFinder(),
-	first(true),
 	stats()
 {
     if (!cap.isOpened())  // if not success, throw exception
@@ -38,10 +36,6 @@ HandTracker::HandTracker(std::string file_name) :
 
     // Initialize the classifier
 	classifier.load("../assets/BayesPresetXYZ");
-}
-
-HandTracker::~HandTracker()
-{
 }
 
 void HandTracker::switch_source(int cam_id)

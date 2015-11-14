@@ -1,6 +1,10 @@
 #include <opencv2/opencv.hpp>
 #include <cstdint>
 
+/**
+ * @class NaiveBayesClassifier
+ * @brief Detect skin in an image using Baysean statistics
+ */
 class NaiveBayesClassifier
 {
 	float colors[256];

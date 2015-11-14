@@ -3,6 +3,10 @@
 #include "Filter.h"
 #include "Region.h"
 
+/**
+ * @class RegionFinder
+ * @brief Finds regions of enclosed space in an image
+ */
 struct RegionFinder
 {
 	int thresh;   /** How well does it detect edges */

@@ -2,6 +2,10 @@
 #include <vector>
 #include <opencv2/opencv.hpp>
 
+/**
+ * @class Region
+ * @brief A region of space defined by a surrounding contour
+ */
 class Region
 {
 	static cv::RNG rng; /** OpenCV RNG generator for color */
