@@ -22,8 +22,6 @@ private:
 	RegionFinder regionFinder;
 	bool first;
 
-	ColorProfiler cp;
-	HSVFilter* hsv;
+	NaiveBayesClassifier classifier;
 	StatsGenerator stats;
-	cv::Mat frame;   // Use for each individual frame
 };

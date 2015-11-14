@@ -14,41 +14,34 @@ HandTracker::HandTracker(int cam_id):
     cap(cam_id),
     regionFinder(),
     first(true),
-    cp("../assets/haarcascade_frontalface_default.xml"),
-    hsv(new HSVFilter()),
-	stats(),
-	frame()
+	stats()
 {
     if (!cap.isOpened())  // if not success, throw exception
     {
         throw new std::runtime_error("Cannot open the web cam");
     }
 
-    // Add the HSV filter
-    regionFinder.add_filter(hsv);
+	// Initialize the classifier
+	classifier.load("../assets/BayesPresetXYZ");
 }
 
 HandTracker::HandTracker(std::string file_name) :
     cap(file_name),
     regionFinder(),
 	first(true),
-	cp("../assets/haarcascade_frontalface_default.xml"),
-    hsv(new HSVFilter()),
-	stats(),
-	frame()
+	stats()
 {
     if (!cap.isOpened())  // if not success, throw exception
     {
         throw new std::runtime_error("Cannot open file");
     }
 
-    // Add the HSV filter
-    regionFinder.add_filter(hsv);
+    // Initialize the classifier
+	classifier.load("../assets/BayesPresetXYZ");
 }
 
 HandTracker::~HandTracker()
 {
-    delete hsv;
 }
 
 void HandTracker::switch_source(int cam_id)
@@ -63,6 +56,8 @@ void HandTracker::switch_source(std::string file_name)
 
 void HandTracker::update()
 {
+	cv::Mat frame;   // Use for each individual frame
+
     if (!cap.read(frame)) // read a new frame from video
     {
         //if not success, break loop
@@ -70,22 +65,26 @@ void HandTracker::update()
         return;
     }
 
-    // Initialize HSV profile and data csv file
-	if (first)
-    {
-        hsv->passband = cp.determine_colors(frame);
-        first = false;
-    }
+	Mat output;
+	classifier.predict(frame, output);
+
+	//morphological opening (removes small objects from the foreground)
+	erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+	//morphological closing (removes small holes from the foreground)
+	dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 
     // Need center point of face for later tracking of frequency
 
 
     // Find the Regions
 	std::vector<Region> regions;
-	regionFinder.find(frame, regions);
+	regionFinder.find(output, regions);
 	
     // Display Regions
-	Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
+	Mat drawing = Mat::zeros(output.size(), CV_8UC3);
     for (int i = 0; i < regions.size(); i++)
     {
         Region region = regions[i];
@@ -103,10 +102,11 @@ void HandTracker::update()
 		}
     }
 
+	imshow("output", output);
     imshow("frame", frame);
     imshow("edges", drawing);
 
-	stats.update(frame, regions);
+	stats.update(output, regions);
 }
 
 int HandTracker::run()
