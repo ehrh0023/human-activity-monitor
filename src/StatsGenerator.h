@@ -11,8 +11,17 @@
 class StatsGenerator
 {
 public:
+	/**
+	 *  Create the generator
+	 * @param file_name to save to
+	 */
 	StatsGenerator(std::string file_name = "Data.csv");
 
+	/**
+	 * Add a new sample
+	 * @param frame to add
+	 * @param regions of interest
+	 */
 	void update(cv::Mat const& frame, const std::vector<Region>& regions);
 	
 	double distance;
