@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include "HandFinder.h"
 
 using namespace cv;
 using namespace std;
@@ -45,44 +46,22 @@ void HandTracker::switch_source(std::string file_name)
 cv::Mat HandTracker::update()
 {
 	cv::Mat frame;   // Use for each individual frame
-
     if (!cap.read(frame)) // read a new frame from video
     {
         //if not success, break loop
         cout << "Cannot read a frame from video stream" << endl;
         return cv::Mat();
     }
-
-    // Need center point of face for later tracking of frequency
-
-
+	
     // Find the Regions
 	std::vector<Region> regions;
 	regionFinder.find(frame, regions);
 	
-    // Display Regions
-	Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
-    for (int i = 0; i < regions.size(); i++)
-    {
-        Region region = regions[i];
-        region.draw(drawing);
-    }
+	// Find the hands
+	cv::Point center = HandFinder::find_hands(regions);
 
-	// Display region bounds
-    for (Region region : regions)
-    {
-		auto reg = region.contour;
-		if (!reg.empty())
-		{
-			Rect r = boundingRect(reg);
-			rectangle(frame, r.tl(), r.br(), Scalar(0, 255, 0), 2);
-		}
-    }
-
-    imshow("frame", frame);
-    imshow("edges", drawing);
-
-	stats.update(frame, regions);
+	// Add a new sample
+	stats.add_sample(center);
 
 	return frame;
 }
@@ -92,7 +71,8 @@ int HandTracker::run()
     // Main loop
     while (1)
     {
-        update();
+        cv::Mat img = update();
+		imshow("Camera", img);
 
         //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
         if (waitKey(30) == 27)

@@ -22,7 +22,7 @@ public:
 	 * @param frame to add
 	 * @param regions of interest
 	 */
-	void update(cv::Mat const& frame, const std::vector<Region>& regions);
+	void add_sample(cv::Point sample);
 	
 	double distance;
 	int frames;
