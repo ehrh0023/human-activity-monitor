@@ -14,7 +14,7 @@ public:
 
 	void switch_source(int cam_id);
 	void switch_source(std::string file_name);
-	void update();
+	cv::Mat update();
 	int  run();
 	
 private:

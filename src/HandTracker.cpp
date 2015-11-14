@@ -54,7 +54,7 @@ void HandTracker::switch_source(std::string file_name)
     cap = VideoCapture(file_name);
 }
 
-void HandTracker::update()
+cv::Mat HandTracker::update()
 {
 	cv::Mat frame;   // Use for each individual frame
 
@@ -62,7 +62,7 @@ void HandTracker::update()
     {
         //if not success, break loop
         cout << "Cannot read a frame from video stream" << endl;
-        return;
+        return cv::Mat();
     }
 
 	Mat output;
@@ -107,6 +107,8 @@ void HandTracker::update()
     imshow("edges", drawing);
 
 	stats.update(output, regions);
+
+	return frame;
 }
 
 int HandTracker::run()

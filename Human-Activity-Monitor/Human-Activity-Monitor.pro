@@ -16,10 +16,26 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    OpenCVViewer.cpp
+    OpenCVViewer.cpp \
+    ../src/ColorProfiler.cpp \
+    ../src/Filter.cpp \
+    ../src/HandTracker.cpp \
+    ../src/main.cpp \
+    ../src/NaiveBayesClassifier.cpp \
+    ../src/Region.cpp \
+    ../src/RegionFinder.cpp \
+    ../src/StatsGenerator.cpp
 
 HEADERS  += mainwindow.h \
-    OpenCVViewer.h
+    OpenCVViewer.h \
+    ../src/ColorProfiler.h \
+    ../src/Filter.h \
+    ../src/HandTracker.h \
+    ../src/HSVRange.h \
+    ../src/NaiveBayesClassifier.h \
+    ../src/Region.h \
+    ../src/RegionFinder.h \
+    ../src/StatsGenerator.h
 
 FORMS    += mainwindow.ui
 

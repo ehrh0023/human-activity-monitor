@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <QTimer>
 #include <opencv2/opencv.hpp>
+#include "../src/HandTracker.h"
 
 class OpenCVViewer : public QWidget
 {
@@ -22,5 +23,5 @@ private:
     bool    showImage( cv::Mat image ); /// Used to set the image to be viewed
     QTimer *timer;
 
-    cv::VideoCapture cap;
+    HandTracker app;
 };
