@@ -7,10 +7,14 @@
  * @class RegionFinder
  * @brief Finds regions of enclosed space in an image
  */
-struct RegionFinder
+class RegionFinder
 {
 	int thresh;   /** How well does it detect edges */
 	static const int max_thresh;   /** Maximum amount of threshold */
+
+	NaiveBayesClassifier classifier;
+public:
+
 	std::vector<Filter*> filters; /** The filters attached to this object */
 
 

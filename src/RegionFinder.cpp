@@ -8,7 +8,8 @@ const int RegionFinder::max_thresh = 255;
 RegionFinder::RegionFinder(int threshold /*= 100*/) 
 	:thresh(threshold)
 {
-
+	// Initialize the classifier
+	classifier.load("../assets/BayesPresetXYZ");
 }
 
 RegionFinder::~RegionFinder()
@@ -30,13 +31,23 @@ void RegionFinder::find(Mat image, std::vector<Region>& regions)
 	}
 
 	// Edge Detection
-	Mat canny_output;
-	Canny(filtered_img, canny_output, thresh, thresh * 2, 3);
+	//Mat canny_output;
+	//Canny(filtered_img, canny_output, thresh, thresh * 2, 3);
+	Mat output;
+	classifier.predict(image, output);
+
+	//morphological opening (removes small objects from the foreground)
+	erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+	//morphological closing (removes small holes from the foreground)
+	dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 
 	// Find contours
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
-	findContours(canny_output, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);//, Point(0, 0));
+	findContours(output, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);//, Point(0, 0));
 
 	// Determine the Regions
 	regions = vector<Region>(contours.size());

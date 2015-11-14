@@ -19,9 +19,6 @@ HandTracker::HandTracker(int cam_id):
     {
         throw new std::runtime_error("Cannot open the web cam");
     }
-
-	// Initialize the classifier
-	classifier.load("../assets/BayesPresetXYZ");
 }
 
 HandTracker::HandTracker(std::string file_name) :
@@ -33,9 +30,6 @@ HandTracker::HandTracker(std::string file_name) :
     {
         throw new std::runtime_error("Cannot open file");
     }
-
-    // Initialize the classifier
-	classifier.load("../assets/BayesPresetXYZ");
 }
 
 void HandTracker::switch_source(int cam_id)
@@ -59,26 +53,15 @@ cv::Mat HandTracker::update()
         return cv::Mat();
     }
 
-	Mat output;
-	classifier.predict(frame, output);
-
-	//morphological opening (removes small objects from the foreground)
-	erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-	dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-
-	//morphological closing (removes small holes from the foreground)
-	dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-	erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-
     // Need center point of face for later tracking of frequency
 
 
     // Find the Regions
 	std::vector<Region> regions;
-	regionFinder.find(output, regions);
+	regionFinder.find(frame, regions);
 	
     // Display Regions
-	Mat drawing = Mat::zeros(output.size(), CV_8UC3);
+	Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
     for (int i = 0; i < regions.size(); i++)
     {
         Region region = regions[i];
@@ -96,11 +79,10 @@ cv::Mat HandTracker::update()
 		}
     }
 
-	imshow("output", output);
     imshow("frame", frame);
     imshow("edges", drawing);
 
-	stats.update(output, regions);
+	stats.update(frame, regions);
 
 	return frame;
 }
