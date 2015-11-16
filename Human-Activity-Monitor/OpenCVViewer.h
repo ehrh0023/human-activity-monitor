@@ -19,7 +19,6 @@ protected:
 
 private:
     QImage      render_img;     /// Qt image to be rendered
-    cv::Mat     original_img;   /// original OpenCV image to be shown
     bool    showImage( cv::Mat image ); /// Used to set the image to be viewed
     QTimer *timer;
 

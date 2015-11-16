@@ -21,18 +21,41 @@ void OpenCVViewer::display_scene()
 
 bool OpenCVViewer::showImage( cv::Mat image )
 {
-    image.copyTo(original_img);
+    if(image.empty())
+        return false;
 
-    cv::resize(original_img, original_img, cv::Size(size().width(), size().height()));
+    float width  = image.cols;
+    float height = image.rows;
+    float percentWidth  = width / size().width();
+    float percentHeight = height / size().height();
 
-    if( original_img.channels() == 3)
-        render_img = QImage((const unsigned char*)(original_img.data),
-                              original_img.cols, original_img.rows,
-                              original_img.step, QImage::Format_RGB888).rgbSwapped();
-    else if( original_img.channels() == 1)
-        render_img = QImage((const unsigned char*)(original_img.data),
-                              original_img.cols, original_img.rows,
-                              original_img.step, QImage::Format_Indexed8);
+    if(percentWidth > percentHeight)
+    {
+        width  /= percentWidth;
+        height /= percentWidth;
+        cv::resize(image, image, cv::Size(width, height));
+    }
+    else
+    {
+        width  /= percentHeight;
+        height /= percentHeight;
+        cv::resize(image, image, cv::Size(width, height));
+    }
+
+    int startX = (size().width() - width) / 2;
+    int startY = (size().height() - height) / 2;
+
+    cv::Mat display( cv::Size(size().width(), size().height()), image.type(), cv::Scalar(180,180,180));
+    image.copyTo(display(cv::Rect(startX, startY, width, height)));//.colRange(startX, width-1));
+
+    if( display.channels() == 3)
+        render_img = QImage((const unsigned char*)(display.data),
+                              display.cols, display.rows,
+                              display.step, QImage::Format_RGB888).rgbSwapped();
+    else if( display.channels() == 1)
+        render_img = QImage((const unsigned char*)(display.data),
+                              display.cols, display.rows,
+                              display.step, QImage::Format_Indexed8);
     else
         return false;
 
