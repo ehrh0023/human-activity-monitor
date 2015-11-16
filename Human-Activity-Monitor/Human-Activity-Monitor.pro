@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     ../src/NaiveBayesClassifier.cpp \
     ../src/Region.cpp \
     ../src/RegionFinder.cpp \
-    ../src/StatsGenerator.cpp
+    ../src/StatsGenerator.cpp \
+    ../src/HandFinder.cpp
 
 HEADERS  += mainwindow.h \
     OpenCVViewer.h \
@@ -35,7 +36,8 @@ HEADERS  += mainwindow.h \
     ../src/NaiveBayesClassifier.h \
     ../src/Region.h \
     ../src/RegionFinder.h \
-    ../src/StatsGenerator.h
+    ../src/StatsGenerator.h \
+    ../src/HandFinder.h
 
 FORMS    += mainwindow.ui
 
