@@ -37,12 +37,12 @@ void RegionFinder::find(Mat image, std::vector<Region>& regions)
 	classifier.predict(image, output);
 
 	//morphological opening (removes small objects from the foreground)
-	erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-	dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-
-	//morphological closing (removes small holes from the foreground)
-	dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-	erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	//erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	//dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+    //
+	////morphological closing (removes small holes from the foreground)
+	//dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	//erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 
 	// Find contours
 	vector<vector<Point> > contours;
@@ -58,9 +58,9 @@ void RegionFinder::find(Mat image, std::vector<Region>& regions)
 		object.moment = moments(contours[i], false);    
 		if (object.moment.m00 != 0)   // This is a wrapper at this point sometimes m00 comes out to be 0 and we later divide by 0 then
 	    {                             // Therefore it is a preventative
-		object.center = Point2f(static_cast<float>(object.moment.m10 / object.moment.m00), 
-									static_cast<float>(object.moment.m01 / object.moment.m00));
-		regions.push_back(object);	
+		    object.center = Point2f(static_cast<float>(object.moment.m10 / object.moment.m00), 
+		    							static_cast<float>(object.moment.m01 / object.moment.m00));
+		    regions.push_back(object);	
 	    }
 	}
 }
