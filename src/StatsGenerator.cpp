@@ -25,43 +25,57 @@ StatsGenerator::StatsGenerator(std::string file_name) :
 	outdata.close();
 }
 
-void StatsGenerator::add_sample(cv::Point sample)
+std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region>& detectedObj)//cv::Point sample)
 {
 	ofstream outdata;									 //write variable
 
     /**************************************************************************************
     ******** Object Tracking***************************************************************
     **************************************************************************************/
-    double distx = 0;
-    double disty = 0;
-    double velocity = 0;
-
-    Region handCenterObj;                                 // Display handCenter for troubleshooting
-	distx = sample.x - handCenterObj.center.x;			  // Calculate distance in x coordinate
-	disty = sample.y - handCenterObj.center.y;			  // Calculate distance in y coordinate
-    
-	handCenterObj.center = Point2f(sample);				  // Set the center point for the object to be displayed
-
-    // calc Velocity
-    distance += ((distx + disty) / 2);                    // Average x and y distances for a single distance
-
-	outdata.open(file_path, ios::app);                    //open the file to write to
-
-	if (!outdata.is_open())  // if not success, throw exception
+    Point2f handCenter(0, 0);                             // Averaged hand coordinate point
+    double distx, disty, velocity = 0;
+	for (int i = 0; i < detectedObj.size(); i++)              // for each region add the y vals and x vals
 	{
-		throw new std::runtime_error("Cannot open file: " + file_path);
+    	if ((i == 0) || (i == 2))
+    	{
+		   Region region = detectedObj[i];
+		   handCenter += region.center;                      // add coordinate regions
+	    }
 	}
-
-    if (frames == 30)                                     // Want 30 frames to establish seconds
-    {
-	   velocity = distance / 30;                          // This gives distance per second or pixels per second
-       cout << velocity << endl;
-       frames = 0;                                        // reset frame count
-       distance = 0;                                      // Average distance per 30 frames
-       outdata << velocity << endl;                       //Write data to .CSV file
-    }
-    frames++;                                             // Track frames over time
-    cout << frames << endl;
+	handCenter.y /= 2;           // This gives accurate x and y vals for the calculated center points
+	handCenter.x /= 2;           // This is a wrapper at this point
+	cout << handCenter << endl;
+    Region handCenterObj;                                 // Display handCenter for troubleshooting
+    handCenterObj.center = handCenter;
+    detectedObj.push_back(handCenterObj);
+    
+    
+    
+	//distx = sample.x - handCenterObj.center.x;			  // Calculate distance in x coordinate
+	//disty = sample.y - handCenterObj.center.y;			  // Calculate distance in y coordinate
+    //
+	//handCenterObj.center = Point2f(sample);				  // Set the center point for the object to be displayed
+    //
+    //// calc Velocity
+    //distance += ((distx + disty) / 2);                    // Average x and y distances for a single distance
+    //
+	//outdata.open(file_path, ios::app);                    //open the file to write to
+    //
+	//if (!outdata.is_open())  // if not success, throw exception
+	//{
+	//	throw new std::runtime_error("Cannot open file: " + file_path);
+	//}
+    //
+    //if (frames == 30)                                     // Want 30 frames to establish seconds
+    //{
+	//   velocity = distance / 30;                          // This gives distance per second or pixels per second
+    //   cout << velocity << endl;
+    //   frames = 0;                                        // reset frame count
+    //   distance = 0;                                      // Average distance per 30 frames
+    //   outdata << velocity << endl;                       //Write data to .CSV file
+    //}
+    //frames++;                                             // Track frames over time
+    //cout << frames << endl;
 
 
     // Compare averaged center point to face center point
@@ -81,6 +95,7 @@ void StatsGenerator::add_sample(cv::Point sample)
     // save as completed cycle towards frequency
     
  	outdata.close();   // Close CSV file
+ 	return detectedObj;
 
     // Ship data to GUI
 

@@ -3,19 +3,7 @@
 using namespace cv;
 
 std::vector<Region> HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& regions)
-{
-	//Point2f handCenter(0, 0);                             // Averaged hand coordinate point
-	//double distx = 0;
-	//double disty = 0;
-	//double velocity = 0;
-	//for (int i = 0; i < regions.size(); i++)              // for each region add the y vals and x vals
-	//{
-	//	Region region = regions[i];
-	//	handCenter += region.center;                      // add coordinate regions
-	//}
-	//handCenter.y /= ((regions.size()) / 2 + 1);           // This gives accurate x and y vals for the calculated center points
-	//handCenter.x /= ((regions.size()) / 2 + 1);           // This is a wrapper at this point
-	
+{	
 	std::vector<Region> detectedObj;
 	Region Face, Hand1, Hand2, handCenterObj;
     Mat drawFace = Mat::zeros(frame.size(), CV_8UC3);     // Temp matrix for displaying calculated center point

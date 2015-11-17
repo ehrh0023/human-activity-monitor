@@ -56,18 +56,29 @@ cv::Mat HandTracker::update()
     // Find the Regions
 	std::vector<Region> regions;
 	regionFinder.find(frame, regions);
-
+	
+	// Display Regions
+	Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
+    for (int i = 0; i < regions.size(); i++)
+    {
+        Region region = regions[i];
+        region.draw(drawing);
+    }
+	
+    imshow("Edges", drawing);
 	// Find the hands and Face
 	//cv::Point center = HandFinder::find_hands(regions);
 	Mat drawFace = Mat::zeros(frame.size(), CV_8UC3);       // Temp matrix for displaying calculated center point
     std::vector<Region> detectedObj;                        // Vector of detected objects                        
 	detectedObj = HandFinder::find_hands(frame, regions);   // Find hands and Face and populate detected objects 
-	detectedObj[1].draw(drawFace);                          // Draw Face                                         
-    imshow("Face", drawFace);                               // Display Face                                      
+	detectedObj[0].draw(drawFace);                          // Draw Face
+	detectedObj[2].draw(drawFace);                                         
+                                   // Display Face                                      
                                                            
 	// Add a new sample
-	//stats.add_sample(center);
-
+	detectedObj = stats.add_sample(frame, detectedObj);//, center);
+	detectedObj[3].draw(drawFace);
+    imshow("Hands", drawFace);
 	return frame;
 }
 
