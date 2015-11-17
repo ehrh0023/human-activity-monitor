@@ -35,6 +35,7 @@ void RegionFinder::find(Mat image, std::vector<Region>& regions)
 	//Canny(filtered_img, canny_output, thresh, thresh * 2, 3);
 	Mat output;
 	classifier.predict(image, output);
+	imshow("output", output);
 
 	//morphological opening (removes small objects from the foreground)
 	//erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
@@ -56,11 +57,11 @@ void RegionFinder::find(Mat image, std::vector<Region>& regions)
 		Region object;
 		object.contour = contours[i];
 		object.moment = moments(contours[i], false);    
-		if (object.moment.m00 != 0)   // This is a wrapper at this point sometimes m00 comes out to be 0 and we later divide by 0 then
+		if (object.moment.m00 > 50)   // This is a wrapper at this point sometimes m00 comes out to be 0 and we later divide by 0 then
 	    {                             // Therefore it is a preventative
 		    object.center = Point2f(static_cast<float>(object.moment.m10 / object.moment.m00), 
 		    							static_cast<float>(object.moment.m01 / object.moment.m00));
-		    regions.push_back(object);	
+		    regions.push_back(object);
 	    }
 	}
 }

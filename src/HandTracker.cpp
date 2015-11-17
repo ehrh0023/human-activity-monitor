@@ -56,12 +56,17 @@ cv::Mat HandTracker::update()
     // Find the Regions
 	std::vector<Region> regions;
 	regionFinder.find(frame, regions);
-	
-	// Find the hands
-	cv::Point center = HandFinder::find_hands(regions);
 
+	// Find the hands and Face
+	//cv::Point center = HandFinder::find_hands(regions);
+	Mat drawFace = Mat::zeros(frame.size(), CV_8UC3);       // Temp matrix for displaying calculated center point
+    std::vector<Region> detectedObj;                        // Vector of detected objects                        
+	detectedObj = HandFinder::find_hands(frame, regions);   // Find hands and Face and populate detected objects 
+	detectedObj[1].draw(drawFace);                          // Draw Face                                         
+    imshow("Face", drawFace);                               // Display Face                                      
+                                                           
 	// Add a new sample
-	stats.add_sample(center);
+	//stats.add_sample(center);
 
 	return frame;
 }
@@ -72,7 +77,7 @@ int HandTracker::run()
     while (1)
     {
         cv::Mat img = update();
-		imshow("Camera", img);
+		//imshow("Camera", img);
 
         //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
         if (waitKey(30) == 27)

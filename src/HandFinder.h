@@ -4,5 +4,5 @@
 
 namespace HandFinder
 {
-	cv::Point find_hands(const std::vector<Region>& regions);
+	std::vector<Region> find_hands(cv::Mat image,const std::vector<Region>& regions);
 };
