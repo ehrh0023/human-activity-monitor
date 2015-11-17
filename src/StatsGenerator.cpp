@@ -34,26 +34,23 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
     **************************************************************************************/
     Point2f handCenter(0, 0);                             // Averaged hand coordinate point
     double distx, disty, velocity = 0;
-	for (int i = 0; i < detectedObj.size(); i++)              // for each region add the y vals and x vals
-	{
-    	if ((i == 0) || (i == 2))
-    	{
-		   Region region = detectedObj[i];
-		   handCenter += region.center;                      // add coordinate regions
-	    }
-	}
+
+	handCenter = detectedObj[2].center + detectedObj[0].center;                      // add coordinate regions
 	handCenter.y /= 2;           // This gives accurate x and y vals for the calculated center points
 	handCenter.x /= 2;           // This is a wrapper at this point
 	cout << handCenter << endl;
+	//distx = sample.x - handCenterObj.center.x;
+	//disty = sample.y - handCenterObj.center.y;
+	
     Region handCenterObj;                                 // Display handCenter for troubleshooting
     handCenterObj.center = handCenter;
     detectedObj.push_back(handCenterObj);
     
     
     
-	//distx = sample.x - handCenterObj.center.x;			  // Calculate distance in x coordinate
-	//disty = sample.y - handCenterObj.center.y;			  // Calculate distance in y coordinate
-    //
+				  // Calculate distance in x coordinate
+				  // Calculate distance in y coordinate
+    
 	//handCenterObj.center = Point2f(sample);				  // Set the center point for the object to be displayed
     //
     //// calc Velocity
