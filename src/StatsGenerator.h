@@ -30,6 +30,8 @@ public:
 	double unitTime = 1/30;
     int Cycles = 0;
     int cycFrames = 0;
+    int cycFramesLat = 0;
+    double distance = 0;
 	cv::Point handCenterLast;
 private:
 	std::string file_path;
