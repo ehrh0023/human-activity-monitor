@@ -65,7 +65,7 @@ cv::Mat HandTracker::update()
         region.draw(drawing);
     }
 	
-    imshow("Edges", drawing);
+    //imshow("Edges", drawing);
 	// Find the hands and Face
 	//cv::Point center = HandFinder::find_hands(regions);
 	Mat drawFace = Mat::zeros(frame.size(), CV_8UC3);       // Temp matrix for displaying calculated center point

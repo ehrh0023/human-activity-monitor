@@ -33,7 +33,7 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
     **************************************************************************************/
     Point2f handCenter(0, 0);                             // Averaged hand coordinate point
     double distx, disty, velocity, distance = 0;
-
+    
 	handCenter = detectedObj[2].center + detectedObj[0].center;                      // add coordinate regions
 	handCenter.y /= 2;           // This gives accurate x and y vals for the calculated center points
 	handCenter.x /= 2;           // This is a wrapper at this point
@@ -43,13 +43,34 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
     Region handCenterObj;                               
     handCenterObj.center = handCenter;
     detectedObj.push_back(handCenterObj);
-
     distance += ((distx + disty) / 2);                    // Average x and y distances for a single distance
     //cout << "distance is: " << distance << endl;
-    //if (detectedObj[1].center.y < handCenterObj.center.y)
-    //{
-    //    cout << "1" << endl;
-    //}
+    
+    if (detectedObj[1].center.y > handCenterObj.center.y)   // If the hand mid point is above the center point of the face start cycle
+    {   
+        if (cycle2 == true)
+        {
+           cycle = false;
+           cycle2 = false;
+           cycFrames = frames;
+           frames = 0;
+           Cycles++;
+        }    
+        cycle = true;   // Started the cycle
+    }
+    else
+    {
+       cycle2 = true;
+    }
+    if (cycle == true)
+       frames++;
+       
+    cout << cycFrames << endl;
+    cout << Cycles << endl;
+    
+    // end cycle                         
+    //Cycles++;
+    //cout << Cycles << end;
     
     
 	outdata.open(file_path, ios::app);                    //open the file to write to
@@ -71,16 +92,6 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
     //frames++;                                             // Track frames over time
     //cout << frames << endl;
 
-
-    // Compare averaged center point to face center point
-    // if handCenter > faceCenter
-    // {
-    // While(handCenterY < faceCenterY)   // waits for hand amplitude to rise above faceCenter to complete cycle
-    // {
-    //    store detected hand points as collection of paired save points, one element per each pair of points
-    //    this way we know how many frames occured in this cycle.
-    // }
-    // }
     /*************************************************************************************
     ******** Output Metrics **************************************************************
     *************************************************************************************/

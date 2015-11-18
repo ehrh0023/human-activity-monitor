@@ -24,10 +24,14 @@ public:
 	 */
 	std::vector<Region> add_sample(cv::Mat frame, std::vector<Region>& detectedObj);//cv::Point sample);
 	
-	int frames;
+	int frames = 0;
+	bool cycle;
+	bool cycle2;
+	double unitTime = 1/30;
+    int Cycles = 0;
+    int cycFrames = 0;
 	cv::Point handCenterLast;
 private:
 	std::string file_path;
-	double unitTime = 1/30;
 	
 };
