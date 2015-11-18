@@ -27,7 +27,6 @@ public:
 	int frames = 0;
 	bool cycle;
 	bool cycle2;
-	double unitTime = 1/30;
     int Cycles = 0;
     int cycFrames = 0;
     int cycFramesLat = 0;

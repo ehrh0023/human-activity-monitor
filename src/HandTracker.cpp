@@ -52,6 +52,7 @@ cv::Mat HandTracker::update()
         cout << "Cannot read a frame from video stream" << endl;
         return cv::Mat();
     }
+
 	
     // Find the Regions
 	std::vector<Region> regions;

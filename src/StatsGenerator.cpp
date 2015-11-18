@@ -33,7 +33,7 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
     ******** Object Tracking***************************************************************
     **************************************************************************************/
     Point2f handCenter(0, 0);   // Averaged hand coordinate point
-    double distx, disty, velocity;
+    double distx, disty, velocity = 0;
     
 	handCenter = detectedObj[2].center + detectedObj[0].center;   // add coordinate regions
 	handCenter.y /= 2;   // average x val
@@ -51,9 +51,13 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
            cycle2 = false;    // reset cycles
            cycFramesLat = cycFrames;   // Latch cycles frames  
            Cycles++;                   // Add a cycle count
-           //cout << "distance is: " << distance << endl;
-           distance = 0;               // reset distance
-           //cout << cycFrames << endl;
+           cout << "distance is: " << distance << endl; 
+           cout << "Frames: " << cycFrames << endl;
+           velocity = distance / cycFramesLat;      // This gives distance per second or pixels per second
+           cout << "Velocity is: " << velocity << endl;
+           
+           
+           distance = 0;   // reset distance
 		   cycFrames = 0;  // Reset cycles frames for next cycle
            //cout << Cycles << endl;
            
@@ -69,35 +73,18 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
        distance += ((distx + disty) / 2);                   // Average x and y distances for a single distance
     } 
     handCenterLast = handCenter;
-    
-    
-	
-
-	
-    //velocity = distance / unitTime;                       // This gives distance per second or pixels per second
-    //if (frames == 30)                                     // Want 30 frames to establish seconds
-    //{
-    //
-    //   cout << velocity << endl;
-    //   frames = 0;                                        // reset frame count
-    //   distance = 0;                                      // Average distance per 30 frames
-    //   //outdata << velocity << endl;                     //Write data to .CSV file
-    //}
-    //frames++;                                             // Track frames over time
-    //cout << frames << endl;
-
+    frames++;
     /*************************************************************************************
     ******** Output Metrics **************************************************************
     *************************************************************************************/
-    // find lowest y amplitude over saved frames
-    // calculate velocity
+
     // save as completed cycle towards frequency
     outdata.open(file_path, ios::app);                      //open the file to write to    
 	if (!outdata.is_open())  // if not success, throw exception
 	{
 		throw new std::runtime_error("Cannot open file: " + file_path);
 	}
-    frames++;
+    outdata << velocity << endl;
  	outdata.close();   // Close CSV file
  	return detectedObj;
 
