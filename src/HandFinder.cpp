@@ -7,20 +7,28 @@ std::vector<Region> HandFinder::find_hands(cv::Mat frame, const std::vector<Regi
 	std::vector<Region> detectedObj;
 	Region Face, Hand1, Hand2, handCenterObj;
     Mat drawFace = Mat::zeros(frame.size(), CV_8UC3);     // Temp matrix for displaying calculated center point
-	//etectedObj = vector<Region>(3);
+    Face = regions[0];
+	//detectedObj = vector<Region>(3);
 	for (int i = 0; i < regions.size(); i++)              // for each region add the y vals and x vals
     {
         Region region = regions[i];
         // Find Face, hand1, and hand2 
-        if (region.moment.m00 > Face.moment.m00)          // If current region is greater than current largest object Face then
-        {
-           Hand1 = Face;                                  // The second largest object is hand1 
-           Face = region;                                 // The largest object is the Face
+        if (Face.moment.m00 < region.moment.m00)          // If The largest region (Face) is less than current region
+        { 
+           Hand2 = Hand1;                                 // Shift the largest region to the front
+           Hand1 = Face;                                
+           Face = region;                               
         }
-        else
+        else if (Hand1.moment.m00 < region.moment.m00)    // if the Face is larger but the largest hand is less than the current region
         {
-           Hand2 = region;                                // The next largest object is hand2
+           Hand2 = Hand1;                                 // Shift this region in
+           Hand1 = region;
         }
+        else if (Hand2.moment.m00 < region.moment.m00)    // else if the region is larger than the second hand
+        {
+            Hand2 = region;                               // shift it in to the end
+        }
+        
         //handCenter += Hand1.center;                     // add coordinate regions
     }
 	detectedObj.push_back(Hand1);

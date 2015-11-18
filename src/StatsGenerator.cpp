@@ -12,7 +12,6 @@ using namespace std;
 
 
 StatsGenerator::StatsGenerator(std::string file_name) :
-	distance(0),
 	frames(1),
 	file_path(file_name)    
 {
@@ -33,43 +32,41 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
     ******** Object Tracking***************************************************************
     **************************************************************************************/
     Point2f handCenter(0, 0);                             // Averaged hand coordinate point
-    double distx, disty, velocity = 0;
+    double distx, disty, velocity, distance = 0;
 
 	handCenter = detectedObj[2].center + detectedObj[0].center;                      // add coordinate regions
 	handCenter.y /= 2;           // This gives accurate x and y vals for the calculated center points
 	handCenter.x /= 2;           // This is a wrapper at this point
-	cout << handCenter << endl;
-	//distx = sample.x - handCenterObj.center.x;
-	//disty = sample.y - handCenterObj.center.y;
-	
-    Region handCenterObj;                                 // Display handCenter for troubleshooting
+	//cout << handCenter << endl;
+	distx = handCenter.x - handCenterLast.x;
+	disty = handCenter.y - handCenterLast.y;
+    Region handCenterObj;                               
     handCenterObj.center = handCenter;
     detectedObj.push_back(handCenterObj);
+
+    distance += ((distx + disty) / 2);                    // Average x and y distances for a single distance
+    //cout << "distance is: " << distance << endl;
+    //if (detectedObj[1].center.y < handCenterObj.center.y)
+    //{
+    //    cout << "1" << endl;
+    //}
     
     
+	outdata.open(file_path, ios::app);                    //open the file to write to
     
-				  // Calculate distance in x coordinate
-				  // Calculate distance in y coordinate
-    
-	//handCenterObj.center = Point2f(sample);				  // Set the center point for the object to be displayed
-    //
-    //// calc Velocity
-    //distance += ((distx + disty) / 2);                    // Average x and y distances for a single distance
-    //
-	//outdata.open(file_path, ios::app);                    //open the file to write to
-    //
-	//if (!outdata.is_open())  // if not success, throw exception
-	//{
-	//	throw new std::runtime_error("Cannot open file: " + file_path);
-	//}
-    //
+	if (!outdata.is_open())  // if not success, throw exception
+	{
+		throw new std::runtime_error("Cannot open file: " + file_path);
+	}
+	
+    //velocity = distance / unitTime;                    // This gives distance per second or pixels per second
     //if (frames == 30)                                     // Want 30 frames to establish seconds
     //{
-	//   velocity = distance / 30;                          // This gives distance per second or pixels per second
+    //
     //   cout << velocity << endl;
     //   frames = 0;                                        // reset frame count
     //   distance = 0;                                      // Average distance per 30 frames
-    //   outdata << velocity << endl;                       //Write data to .CSV file
+    //   //outdata << velocity << endl;                     //Write data to .CSV file
     //}
     //frames++;                                             // Track frames over time
     //cout << frames << endl;
