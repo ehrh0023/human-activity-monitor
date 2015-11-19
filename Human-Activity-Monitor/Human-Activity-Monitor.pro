@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 QMAKE_CXXFLAGS += /FS
 
@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     ../src/Region.cpp \
     ../src/RegionFinder.cpp \
     ../src/StatsGenerator.cpp \
-    ../src/HandFinder.cpp
+    ../src/HandFinder.cpp \
+    ../lib/qcustomplot/qcustomplot.cpp
 
 HEADERS  += mainwindow.h \
     OpenCVViewer.h \
@@ -37,7 +38,8 @@ HEADERS  += mainwindow.h \
     ../src/Region.h \
     ../src/RegionFinder.h \
     ../src/StatsGenerator.h \
-    ../src/HandFinder.h
+    ../src/HandFinder.h \
+    ../lib/qcustomplot/qcustomplot.h
 
 FORMS    += mainwindow.ui
 

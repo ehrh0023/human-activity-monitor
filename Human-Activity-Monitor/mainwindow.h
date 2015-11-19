@@ -32,6 +32,8 @@ private slots:
     void on_Velocity_sliderMoved(int position);
 
     void on_Frequency_actionTriggered(int action);
+    void on_widget_2_destroyed();
+
 private:
     Ui::MainWindow *ui;
 };
