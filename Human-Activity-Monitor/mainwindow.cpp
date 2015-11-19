@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "../lib/qcustomplot/qcustomplot.h"
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -26,15 +27,14 @@ void MainWindow::on_pushButton_clicked()
             this,
             tr("Open File"),
             "C://",
-            "All Files (*.*);;Text File (*.txt);;Music File(*.mp3)"
+            "All Files (*.*);;Text File (*.txt);;Music File(*.mp3)");
 
     QMessageBox::information(this,tr("File Name"),filename);
-            );
 }
 
-void MainWindow::on_widget_2_destroyed()
+void MainWindow::on_customPlot_destroyed()
 {
-
+    QCustomPlot* customPlot = ui->customPlot;
     customPlot->addGraph(); // blue line
     customPlot->graph(0)->setPen(QPen(Qt::blue));
     customPlot->graph(0)->setBrush(QBrush(QColor(240, 255, 200)));
@@ -108,5 +108,4 @@ void MainWindow::on_widget_2_destroyed()
       lastFpsKey = key;
       frameCount = 0;
     }
-
 }

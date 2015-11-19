@@ -80,7 +80,7 @@ p, li { white-space: pre-wrap; }
      <string>START/STOP</string>
     </property>
    </widget>
-   <widget class="QCustomPlot" name="widget_2" native="true">
+   <widget class="QCustomPlot" name="customPlot" native="true">
     <property name="geometry">
      <rect>
       <x>450</x>
@@ -100,6 +100,21 @@ p, li { white-space: pre-wrap; }
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFIle">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionOpen_Webcam"/>
+   </widget>
+   <widget class="QMenu" name="menuRun">
+    <property name="title">
+     <string>Run</string>
+    </property>
+    <addaction name="actionProcess"/>
+   </widget>
+   <addaction name="menuFIle"/>
+   <addaction name="menuRun"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -110,19 +125,34 @@ p, li { white-space: pre-wrap; }
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open File</string>
+   </property>
+  </action>
+  <action name="actionOpen_Webcam">
+   <property name="text">
+    <string>Open Webcam</string>
+   </property>
+  </action>
+  <action name="actionProcess">
+   <property name="text">
+    <string>Process</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
    <class>OpenCVViewer</class>
    <extends>QWidget</extends>
-   <header location="global">opencvviewer.h</header>
+   <header>opencvviewer.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QCustomPlot</class>
    <extends>QWidget</extends>
-   <header>qcustomplot.h</header>
+   <header>../lib/qcustomplot/qcustomplot.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

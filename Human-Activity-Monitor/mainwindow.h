@@ -25,17 +25,13 @@ public:
 private slots:
     void on_textBrowser_destroyed();
 
-    void on_Velocity_actionTriggered(int action);
-
     void on_pushButton_clicked();
 
-    void on_Velocity_sliderMoved(int position);
-
-    void on_Frequency_actionTriggered(int action);
-    void on_widget_2_destroyed();
+    void on_customPlot_destroyed();
 
 private:
     Ui::MainWindow *ui;
+    QTimer dataTimer;
 };
 
 #endif // MAINWINDOW_H
