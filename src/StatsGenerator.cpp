@@ -7,6 +7,8 @@
 #include <fstream>
 #include <algorithm>
 #include <stdlib.h>
+#include <chrono>
+#include <ctime>
 
 using namespace cv;
 using namespace std;
@@ -32,13 +34,12 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
     /**************************************************************************************
     ******** Object Tracking***************************************************************
     **************************************************************************************/
+    // Metric Initializations
     Point2f handCenter(0, 0);   // Averaged hand coordinate point
     double distx, disty, velocity = 0;
-    
 	handCenter = detectedObj[2].center + detectedObj[0].center;   // add coordinate regions
 	handCenter.y /= 2;   // average x val
 	handCenter.x /= 2;   // average y val
-
     Region handCenterObj;                               
     handCenterObj.center = handCenter;
     detectedObj.push_back(handCenterObj);   // push up one level for drawing
@@ -47,33 +48,31 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
     {   
         if (cycle2 == true)   // end cycle
         {
-           cycle = false;     // reset cycles
-           cycle2 = false;    // reset cycles
-           cycFramesLat = cycFrames;   // Latch cycles frames  
-           Cycles++;                   // Add a cycle count
-           cout << "distance is: " << distance << endl; 
-           cout << "Frames: " << cycFrames << endl;
-           velocity = distance / cycFramesLat;      // This gives distance per second or pixels per second
-           cout << "Velocity is: " << velocity << endl;
-           
-           
-           distance = 0;   // reset distance
-		   cycFrames = 0;  // Reset cycles frames for next cycle
-           //cout << Cycles << endl;
-           
-        }    
-        cycle = true;   // Started the cycle
+           end = chrono::system_clock::now();
+           cycleTime = end - start;    // Cycle time in seconds to the nearest microsecond
+           velocity = distance / cycleTime.count();      // This gives distance per second or pixels per second
+           cycles++;                   // Add a cycle count
+           distance = 0;               // reset distance
+           cycle = false;              // reset cycle
+           cycle2 = false;             // reset cycle2
+        }
+        else
+        {    
+           cycle = true;   // Started the cycle
+           start = chrono::system_clock::now();         // Start counting cycle time
+        }
     }
     else
-    {
+    { 
        cycle2 = true;   // hands are below the face center point
-       cycFrames++;
        distx = abs(handCenter.x - handCenterLast.x);
 	   disty = abs(handCenter.y - handCenterLast.y);
-       distance += ((distx + disty) / 2);                   // Average x and y distances for a single distance
+       distance += ((distx + disty) / 2);               // Average x and y distances for a single distance 
+      
     } 
     handCenterLast = handCenter;
     frames++;
+    //frequency = cycles / 
     /*************************************************************************************
     ******** Output Metrics **************************************************************
     *************************************************************************************/
@@ -84,7 +83,7 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
 	{
 		throw new std::runtime_error("Cannot open file: " + file_path);
 	}
-    outdata << velocity << endl;
+    outdata << velocity; //<< frequency << endl;
  	outdata.close();   // Close CSV file
  	return detectedObj;
 

@@ -3,6 +3,8 @@
 #include <opencv2/opencv.hpp>
 #include "Region.h"
 #include "ColorProfiler.h"
+#include <chrono>
+#include <ctime>
 
 /**
  * @class StatsGenerator
@@ -25,13 +27,13 @@ public:
 	std::vector<Region> add_sample(cv::Mat frame, std::vector<Region>& detectedObj);//cv::Point sample);
 	
 	int frames = 0;
-	bool cycle;
-	bool cycle2;
-    int Cycles = 0;
-    int cycFrames = 0;
-    int cycFramesLat = 0;
+	bool cycle = false;
+	bool cycle2 = false;
+    int cycles = 0;
     double distance = 0;
 	cv::Point handCenterLast;
+	std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> start, end;                                                                  
+    std::chrono::duration<double> cycleTime;     // Contains the time duration of a cycle
 private:
 	std::string file_path;
 	

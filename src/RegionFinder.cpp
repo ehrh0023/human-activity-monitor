@@ -35,7 +35,7 @@ void RegionFinder::find(Mat image, std::vector<Region>& regions)
 	//Canny(filtered_img, canny_output, thresh, thresh * 2, 3);
 	Mat output;
 	classifier.predict(image, output);
-	//imshow("output", output);
+	imshow("output", output);
 
 	// Find contours
 	vector<vector<Point> > contours;
