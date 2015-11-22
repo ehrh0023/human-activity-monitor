@@ -74,9 +74,9 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
         case 3:
            end = chrono::system_clock::now();
            cycleTime = end - start;    // Cycle time in seconds to the nearest microsecond
+           cycles++;                   // Add a cycle count
            velocity = distance / cycleTime.count();      // Velocity (distance per second) or (pixels per second)
            frequency = cycles / cycleTime.count();       // Frequency (cycles per second)
-           cycles++;                   // Add a cycle count
            distance = 0;               // reset distance
            State = 1;
            break;
