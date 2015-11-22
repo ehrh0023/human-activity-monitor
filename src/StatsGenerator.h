@@ -25,7 +25,6 @@ public:
 	 * @param regions of interest
 	 */
 	std::vector<Region> add_sample(cv::Mat frame, std::vector<Region>& detectedObj);//cv::Point sample);
-	
 	int frames = 0;
 	bool cycle = false;
 	bool cycle2 = false;

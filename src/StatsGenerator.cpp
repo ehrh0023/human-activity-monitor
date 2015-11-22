@@ -36,7 +36,10 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
     **************************************************************************************/
     // Metric Initializations
     Point2f handCenter(0, 0);   // Averaged hand coordinate point
-    double distx, disty, velocity = 0;
+    double distx = 0;
+    double disty = 0;
+    double frequency = 0;
+    double velocity = 0;
 	handCenter = detectedObj[2].center + detectedObj[0].center;   // add coordinate regions
 	handCenter.y /= 2;   // average x val
 	handCenter.x /= 2;   // average y val
@@ -50,7 +53,8 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
         {
            end = chrono::system_clock::now();
            cycleTime = end - start;    // Cycle time in seconds to the nearest microsecond
-           velocity = distance / cycleTime.count();      // This gives distance per second or pixels per second
+           velocity = distance / cycleTime.count();      // Velocity (distance per second) or (pixels per second)
+           frequency = cycles / cycleTime.count();       // Frequency (cycles per second)
            cycles++;                   // Add a cycle count
            distance = 0;               // reset distance
            cycle = false;              // reset cycle
@@ -72,6 +76,7 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
     } 
     handCenterLast = handCenter;
     frames++;
+    
     //frequency = cycles / 
     /*************************************************************************************
     ******** Output Metrics **************************************************************
@@ -83,7 +88,7 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
 	{
 		throw new std::runtime_error("Cannot open file: " + file_path);
 	}
-    outdata << velocity; //<< frequency << endl;
+	outdata << velocity << "," << frequency << endl;
  	outdata.close();   // Close CSV file
  	return detectedObj;
 
