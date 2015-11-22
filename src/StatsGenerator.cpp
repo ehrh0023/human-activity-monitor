@@ -90,10 +90,11 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
 	{
 		throw new std::runtime_error("Cannot open file: " + file_path);
 	}
-	outdata << velocity << "," << frequency << "," << cycleOccurTime.count() << endl;   // output metrics as "velocity" "frequency" "Time since Algorithm start" in adjacent cells.
+	if ((velocity > 0) & (frequency > 0) & (cycleOccurTime.count() > 0))
+	   outdata << velocity << "," << frequency << "," << cycleOccurTime.count() << endl;   // output metrics as "velocity" "frequency" "Time since Algorithm start" in adjacent cells.
  	outdata.close();   // Close CSV file        
  	return detectedObj;
 
     // Ship data to GUI
 
-}
+}                                             
