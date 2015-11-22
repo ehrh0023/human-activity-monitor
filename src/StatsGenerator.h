@@ -32,6 +32,9 @@ public:
 	cv::Point handCenterLast;
 	std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> start, end;                                                                  
     std::chrono::duration<double> cycleTime;     // Contains the time duration of a cycle
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CycleCompTime;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> AlgStartTime;
+    std::chrono::duration<double> cycleOccurTime;     // Contains the time duration of a cycle
 private:
 	std::string file_path;
 	
