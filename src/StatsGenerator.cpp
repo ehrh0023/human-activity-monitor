@@ -46,34 +46,41 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
     Region handCenterObj;                               
     handCenterObj.center = handCenter;
     detectedObj.push_back(handCenterObj);   // push up one level for drawing
-
-    if (detectedObj[1].center.y > handCenterObj.center.y)         // If the hand mid point is above the center point of the face start cycle
-    {   
-        if (cycle2 == true)   // end cycle
-        {
+    
+    switch (State)
+    {  
+        case 0:
+           if (detectedObj[1].center.y > handCenterObj.center.y)   // Hands are above center point of Head
+           {
+               State = 1;
+           }
+           break;
+        case 1:
+           if (detectedObj[1].center.y < handCenterObj.center.y)
+           {
+               start = chrono::system_clock::now();         // Start counting cycle time
+               State = 2;    
+           }
+           break;
+        case 2:
+           distx = abs(handCenter.x - handCenterLast.x);                                                      
+           disty = abs(handCenter.y - handCenterLast.y);                                                         
+           distance += ((distx + disty) / 2);               // Average x and y distances for a single distance
+           if (detectedObj[1].center.y > handCenterObj.center.y)
+           {
+              State = 3;
+           }
+           break;
+        case 3:
            end = chrono::system_clock::now();
            cycleTime = end - start;    // Cycle time in seconds to the nearest microsecond
            velocity = distance / cycleTime.count();      // Velocity (distance per second) or (pixels per second)
            frequency = cycles / cycleTime.count();       // Frequency (cycles per second)
            cycles++;                   // Add a cycle count
            distance = 0;               // reset distance
-           cycle = false;              // reset cycle
-           cycle2 = false;             // reset cycle2
-        }
-        else
-        {    
-           cycle = true;   // Started the cycle
-           start = chrono::system_clock::now();         // Start counting cycle time
-        }
+           State = 1;
+           break;
     }
-    else
-    { 
-       cycle2 = true;   // hands are below the face center point
-       distx = abs(handCenter.x - handCenterLast.x);
-	   disty = abs(handCenter.y - handCenterLast.y);
-       distance += ((distx + disty) / 2);               // Average x and y distances for a single distance 
-      
-    } 
     handCenterLast = handCenter;
     frames++;
     
@@ -81,14 +88,13 @@ std::vector<Region> StatsGenerator::add_sample(cv::Mat frame, std::vector<Region
     /*************************************************************************************
     ******** Output Metrics **************************************************************
     *************************************************************************************/
-
-    // save as completed cycle towards frequency
-    outdata.open(file_path, ios::app);                      //open the file to write to    
+    outdata.open(file_path, ofstream::app);                      //open the file to write to    
 	if (!outdata.is_open())  // if not success, throw exception
 	{
 		throw new std::runtime_error("Cannot open file: " + file_path);
 	}
-	outdata << velocity << "," << frequency << endl;
+	outdata << velocity << "," << frequency << endl;       // output metrics as "velocity" "frequency" in adjacent cells.
+	//cout << velocity << endl << frequency << endl;
  	outdata.close();   // Close CSV file
  	return detectedObj;
 

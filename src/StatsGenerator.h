@@ -26,10 +26,9 @@ public:
 	 */
 	std::vector<Region> add_sample(cv::Mat frame, std::vector<Region>& detectedObj);//cv::Point sample);
 	int frames = 0;
-	bool cycle = false;
-	bool cycle2 = false;
     int cycles = 0;
     double distance = 0;
+    int State = 0;
 	cv::Point handCenterLast;
 	std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> start, end;                                                                  
     std::chrono::duration<double> cycleTime;     // Contains the time duration of a cycle
