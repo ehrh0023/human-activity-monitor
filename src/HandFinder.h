@@ -1,8 +1,11 @@
+#pragma once
 #include <opencv2/opencv.hpp>
 #include <utility>
 #include "Region.h"
 
-namespace HandFinder
+class HandFinder
 {
-	std::vector<Region> find_hands(cv::Mat image,const std::vector<Region>& regions);
+public:
+	static float distance_thresh;
+	static std::vector<Region> find_hands(cv::Mat image,const std::vector<Region>& regions);
 };

@@ -74,6 +74,13 @@ cv::Mat HandTracker::update()
                                                            
 	// Add a new sample
 	detectedObj = stats.add_sample(frame, detectedObj);
+
+	for (int i = 0; i < detectedObj.size(); i++) 
+	{
+		Rect r = boundingRect(detectedObj[i].contour);
+		rectangle (frame, Point(r.x, r.y), Point(r.x + r.width, r.y + r.height), Scalar(0, 255, 0), 2);
+	}
+	imshow("frmae", frame);
 	return frame;
 }
 
