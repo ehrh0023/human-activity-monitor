@@ -10,11 +10,6 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-
-
-
-
-using namespace cv;
 using namespace std;
 using namespace cv;
 
@@ -31,78 +26,66 @@ double distancebetweenpoint(Point c, Point d)
 
 std::vector<Region> HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& regions)
 {
-	float largest = -1;
-	Region largest_region;
-	std::vector<Region> possible;
-	int largest_index = 0;
+	float largest_area = -1;
+	Region head;
+
 	//go through all of the regions
 	for (int i = 0; i < regions.size(); i++)
 	{
 		Region region = regions[i];
+
 		//find area of the regions
-		float head = regions[i].moment.m00;
-		if (head > largest)
+		float area = regions[i].moment.m00;
+		if (area > largest_area)
 		{
-			largest = head;
-			largest_region = region;
+			largest_area = area;
+			head = region;
 			//Rect bounding_rect = boundingRect(regions[i].contour);
 		}
 	}
-	for (int i = 0; i < regions.size(); i++)
-	{
-		Region region = regions[i];
 
-		if (region.center == largest_region.center)
-			continue;
+	std::vector<Region> region_thresh = find_within(distance_thresh, head.center, regions);
 
-		double dist = distancebetweenpoint(largest_region.center, region.center);
-		if (dist <= distance_thresh)
-		{
-			possible.push_back(region);
-		}
-	}
-	largest = -1;
-	std::pair<Region, Region> largesthand;
-	
-	for (int j = 0; j < possible.size(); j++)
+	largest_area = -1;
+	std::pair<Region, Region> hand_pair;
+	std::vector<Region> left_half = get_right_regions(head.center, region_thresh);
+	std::vector<Region> right_half = get_left_regions(head.center, region_thresh);
+
+	for (int i = 0; i < region_thresh.size(); i++)
 	{
-		Region possible_region = possible[j];
-		//find area of the regions		
+		Region region = region_thresh[i];
+
 		std::vector<Region> otherside;
-		if (possible_region.center.x < largest_region.center.x)
+		if (region.center.x < head.center.x)
 		{
-			otherside = get_right_regions(largest_region.center, possible);
+			otherside = right_half;
 		}
 		else
 		{
-			otherside = get_left_regions(largest_region.center, possible);
+			otherside = left_half;
 		}
 
-
-		for (int k = 0; k < otherside.size(); k++)
+		for (int j = 0; j < otherside.size(); j++)
 		{
-			Region other = otherside[j];
-			float handarea = possible_region.moment.m00 + other.moment.m00;
-			if (handarea > largest)
+			Region other = otherside[i];
+			float combined_area = region.moment.m00 + other.moment.m00;
+			if (combined_area > largest_area)
 			{
-				largest = handarea;
-				largesthand.first = possible_region;
-				largesthand.second = other;
-
+				largest_area = combined_area;
+				hand_pair.first = region;
+				hand_pair.second = other;
 			}
-
 		}
 	}
 	
 	std::vector<Region> data;
-	data.push_back(largesthand.first);
-	data.push_back(largest_region);
-	data.push_back(largesthand.second);
-
+	data.push_back(hand_pair.first);
+	data.push_back(head);
+	data.push_back(hand_pair.second);
 	return data;
 }
 
-std::vector<Region>  HandFinder::get_left_regions(cv::Point midpoint, std::vector<Region>& regions)
+std::vector<Region>& HandFinder::get_left_regions(cv::Point2f midpoint, const std::vector<Region>& regions)
 {
 	std::vector<Region> left_regions;
 
@@ -119,7 +102,7 @@ std::vector<Region>  HandFinder::get_left_regions(cv::Point midpoint, std::vecto
 	return left_regions;
 }
 
-std::vector<Region>  HandFinder::get_right_regions(cv::Point midpoint, std::vector<Region>& regions)
+std::vector<Region>& HandFinder::get_right_regions(cv::Point2f midpoint, const std::vector<Region>& regions)
 {
 	std::vector<Region> right_regions;
 
@@ -134,4 +117,23 @@ std::vector<Region>  HandFinder::get_right_regions(cv::Point midpoint, std::vect
 	}
 
 	return right_regions;
+}
+
+std::vector<Region>& HandFinder::find_within(float distance, cv::Point2f point, const std::vector<Region>& regions)
+{
+	std::vector<Region> region_thresh;
+	for (int i = 0; i < regions.size(); i++)
+	{
+		Region region = regions[i];
+
+		if (region.center == point)
+			continue;
+
+		double dist = distancebetweenpoint(point, region.center);
+		if (dist <= distance_thresh)
+		{
+			region_thresh.push_back(region);
+		}
+	}
+	return region_thresh;
 }
