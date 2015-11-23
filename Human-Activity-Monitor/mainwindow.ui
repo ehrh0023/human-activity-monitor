@@ -56,7 +56,7 @@ p, li { white-space: pre-wrap; }
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="OpenCVViewer" name="widget" native="true">
+    <widget class="OpenCVViewer" name="opencv_display" native="true">
      <property name="geometry">
       <rect>
        <x>-1</x>
@@ -67,20 +67,7 @@ p, li { white-space: pre-wrap; }
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="pushButton">
-    <property name="geometry">
-     <rect>
-      <x>680</x>
-      <y>320</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>START/STOP</string>
-    </property>
-   </widget>
-   <widget class="QCustomPlot" name="customPlot" native="true">
+   <widget class="StatsGraph" name="customPlot" native="true">
     <property name="geometry">
      <rect>
       <x>450</x>
@@ -104,7 +91,7 @@ p, li { white-space: pre-wrap; }
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpen"/>
+    <addaction name="actionOpen_File"/>
     <addaction name="actionOpen_Webcam"/>
    </widget>
    <widget class="QMenu" name="menuRun">
@@ -112,6 +99,9 @@ p, li { white-space: pre-wrap; }
      <string>Run</string>
     </property>
     <addaction name="actionProcess"/>
+    <addaction name="actionSave_Stats_As"/>
+    <addaction name="actionSave_Video_As"/>
+    <addaction name="actionEnd_Processing"/>
    </widget>
    <addaction name="menuFIle"/>
    <addaction name="menuRun"/>
@@ -125,11 +115,6 @@ p, li { white-space: pre-wrap; }
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionOpen">
-   <property name="text">
-    <string>Open File</string>
-   </property>
-  </action>
   <action name="actionOpen_Webcam">
    <property name="text">
     <string>Open Webcam</string>
@@ -138,6 +123,26 @@ p, li { white-space: pre-wrap; }
   <action name="actionProcess">
    <property name="text">
     <string>Process</string>
+   </property>
+  </action>
+  <action name="actionOpen_File">
+   <property name="text">
+    <string>Open File</string>
+   </property>
+  </action>
+  <action name="actionEnd_Processing">
+   <property name="text">
+    <string>End Processing</string>
+   </property>
+  </action>
+  <action name="actionSave_Stats_As">
+   <property name="text">
+    <string>Save Stats As</string>
+   </property>
+  </action>
+  <action name="actionSave_Video_As">
+   <property name="text">
+    <string>Save Video As</string>
    </property>
   </action>
  </widget>
@@ -150,9 +155,9 @@ p, li { white-space: pre-wrap; }
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QCustomPlot</class>
+   <class>StatsGraph</class>
    <extends>QWidget</extends>
-   <header>../lib/qcustomplot/qcustomplot.h</header>
+   <header>StatsGraph.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

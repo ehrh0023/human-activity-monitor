@@ -4,12 +4,17 @@
 #include <QTimer>
 #include <opencv2/opencv.hpp>
 #include "../src/HandTracker.h"
+#include "StatsGraph.h"
 
 class OpenCVViewer : public QWidget
 {
     Q_OBJECT
 public:
     OpenCVViewer(QWidget *parent = 0);
+
+    HandTracker& getHandTracker();
+
+    StatsGraph* stats;
 
 public slots:
     void display_scene();

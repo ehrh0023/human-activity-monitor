@@ -16,6 +16,13 @@ OpenCVViewer::OpenCVViewer(QWidget *parent) :
 void OpenCVViewer::display_scene()
 {
     cv::Mat frame = app.update();
+
+    // calculate two new data points:
+    double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+    double value = qSin(key); //qSin(key*1.6+qCos(key*1.7)*2)*10 + qSin(key*1.2+0.56)*20 + 26;
+
+    stats->realTimeData(key,value);
+
     showImage(frame);
 }
 
@@ -70,3 +77,7 @@ void OpenCVViewer::paintEvent(QPaintEvent *event)
     painter.drawImage(0, 0, render_img);
 }
 
+HandTracker& OpenCVViewer::getHandTracker()
+{
+    return app;
+}

@@ -27,11 +27,23 @@ private slots:
 
     void on_pushButton_clicked();
 
-    void on_customPlot_destroyed();
+    void on_actionOpen_File_triggered();
+
+    void on_actionOpen_Webcam_triggered();
+
+    void on_actionProcess_triggered();
+
+    void on_actionSave_Stats_As_triggered();
+
+    void on_actionSave_Video_As_triggered();
 
 private:
     Ui::MainWindow *ui;
     QTimer dataTimer;
+
+    QString statsfile;
+    QString vidfile;
+
 };
 
 #endif // MAINWINDOW_H

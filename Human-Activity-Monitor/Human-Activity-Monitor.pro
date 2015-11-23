@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     ../src/RegionFinder.cpp \
     ../src/StatsGenerator.cpp \
     ../src/HandFinder.cpp \
-    ../lib/qcustomplot/qcustomplot.cpp
+    ../lib/qcustomplot/qcustomplot.cpp \
+    StatsGraph.cpp
 
 HEADERS  += mainwindow.h \
     OpenCVViewer.h \
@@ -39,7 +40,8 @@ HEADERS  += mainwindow.h \
     ../src/RegionFinder.h \
     ../src/StatsGenerator.h \
     ../src/HandFinder.h \
-    ../lib/qcustomplot/qcustomplot.h
+    ../lib/qcustomplot/qcustomplot.h \
+    StatsGraph.h
 
 FORMS    += mainwindow.ui
 
