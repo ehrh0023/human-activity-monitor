@@ -5,6 +5,7 @@
 #include "ColorProfiler.h"
 #include <chrono>
 #include <ctime>
+#include "HandFinder.h"
 
 /**
  * @class StatsGenerator
@@ -24,18 +25,19 @@ public:
 	 * @param frame to add
 	 * @param regions of interest
 	 */
-	std::vector<Region> add_sample(cv::Mat frame, std::vector<Region>& detectedObj);//cv::Point sample);
-	int frames = 0;
-    int cycles = 0;
-    double distance = 0;
-    int State = 0;
-	cv::Point handCenterLast;
-	std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> start, end;                                                                  
-    std::chrono::duration<double> cycleTime;     // Contains the time duration of a cycle
-    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CycleCompTime;
-    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> AlgStartTime;
-    std::chrono::duration<double> cycleOccurTime;     // Contains the time duration of a cycle
+	void add_sample(cv::Mat frame, HandInfo info);//cv::Point sample);
+
 private:
+	int frames = 0;
+	int cycles = 0;
+	double distance = 0;
+	int State = 0;
+	cv::Point handCenterLast;
+	std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> start, end;
+	std::chrono::duration<double> cycleTime;     // Contains the time duration of a cycle
+	std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CycleCompTime;
+	std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> AlgStartTime;
+	std::chrono::duration<double> cycleOccurTime;     // Contains the time duration of a cycle
+
 	std::string file_path;
-	
 };

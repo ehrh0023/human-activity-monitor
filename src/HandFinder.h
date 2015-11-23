@@ -19,7 +19,7 @@ class HandFinder
 public:
 	static float hand_thresh;
 	static float distance_thresh;
-	static std::vector<Region> find_hands(cv::Mat image,const std::vector<Region>& regions);
+	static HandInfo find_hands(cv::Mat image, const std::vector<Region>& regions);
 
 private:
 	static std::vector<Region>& get_left_regions(cv::Point2f midpoint, const std::vector<Region>& regions);

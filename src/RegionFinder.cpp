@@ -35,6 +35,12 @@ void RegionFinder::find(Mat image, std::vector<Region>& regions)
 	//Canny(filtered_img, canny_output, thresh, thresh * 2, 3);
 	Mat output;
 	classifier.predict(image, output);
+	erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+	//morphological closing (removes small holes from the foreground)
+	dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 	imshow("output", output);
 
 	// Find contours

@@ -24,11 +24,11 @@ double distancebetweenpoint(Point c, Point d)
 
 }
 
-std::vector<Region> HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& regions)
+HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& regions)
 {
 	float largest_area = -1;
 	Region head;
-
+	
 	//go through all of the regions
 	for (int i = 0; i < regions.size(); i++)
 	{
@@ -78,11 +78,11 @@ std::vector<Region> HandFinder::find_hands(cv::Mat frame, const std::vector<Regi
 		}
 	}
 	
-	std::vector<Region> data;
-	data.push_back(hand_pair.first);
-	data.push_back(head);
-	data.push_back(hand_pair.second);
-	return data;
+	HandInfo info;
+	info.left_hand = hand_pair.first;
+	info.head =  head;
+	info.right_hand = hand_pair.second;
+	return info;
 }
 
 std::vector<Region>& HandFinder::get_left_regions(cv::Point2f midpoint, const std::vector<Region>& regions)
