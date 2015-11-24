@@ -28,9 +28,8 @@ StatsGenerator::StatsGenerator(std::string file_name) :
 	outdata.close();
 }
 
-void StatsGenerator::add_sample(cv::Mat frame, HandInfo info)//cv::Point sample)
+MovementSample StatsGenerator::create_sample(cv::Mat frame, HandInfo info, bool save)//cv::Point sample)
 {
-	ofstream outdata;   //write variable
 	/**************************************************************************************
 	******** Object Tracking***************************************************************
 	**************************************************************************************/
@@ -82,18 +81,31 @@ void StatsGenerator::add_sample(cv::Mat frame, HandInfo info)//cv::Point sample)
 	}
 	handCenterLast = handCenter;
 	frames++;
-	/*************************************************************************************
-	******** Output Metrics **************************************************************
-	*************************************************************************************/
+
+	MovementSample sample;
+	sample.time = cycleOccurTime.count();
+	sample.velocity = velocity;
+	sample.frequency = frequency;
+
+	// Output Metrics 
+	if(save)
+	{
+		save_sample(sample);
+	}
+
+	return sample;
+}
+
+void StatsGenerator::save_sample(MovementSample sample)
+{
+	ofstream outdata;   //write variable
+
 	outdata.open(file_path, ofstream::app);                        //open the file to write to    
 	if (!outdata.is_open())                                        // if not success, throw exception
 	{
 		throw new std::runtime_error("Cannot open file: " + file_path);
 	}
-	if ((velocity > 0) & (frequency > 0) & (cycleOccurTime.count() > 0))
-		outdata << velocity << "," << frequency << "," << cycleOccurTime.count() << endl;   // output metrics as "velocity" "frequency" "Time since Algorithm start" in adjacent cells.
+	if ((sample.velocity > 0) & (sample.frequency > 0) & (sample.time > 0))
+		outdata << sample.velocity << "," << sample.frequency << "," << sample.time << endl;   // output metrics as "velocity" "frequency" "Time since Algorithm start" in adjacent cells.
 	outdata.close();   // Close CSV file    
-
-    // Ship data to GUI
-
-}                                             
+}

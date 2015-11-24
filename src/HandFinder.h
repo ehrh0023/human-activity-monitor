@@ -22,7 +22,7 @@ public:
 	static HandInfo find_hands(cv::Mat image, const std::vector<Region>& regions);
 
 private:
-	static std::vector<Region>& get_left_regions(cv::Point2f midpoint, const std::vector<Region>& regions);
-	static std::vector<Region>& get_right_regions(cv::Point2f midpoint, const std::vector<Region>& regions);
-	static std::vector<Region>& find_within(float distance, cv::Point2f point, const std::vector<Region>& regions);
+	static std::vector<Region> get_left_regions(cv::Point2f midpoint, const std::vector<Region>& regions);
+	static std::vector<Region> get_right_regions(cv::Point2f midpoint, const std::vector<Region>& regions);
+	static std::vector<Region> find_within(float distance, cv::Point2f point, const std::vector<Region>& regions);
 };

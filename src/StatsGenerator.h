@@ -7,6 +7,14 @@
 #include <ctime>
 #include "HandFinder.h"
 
+struct MovementSample
+{
+	float time;
+	float velocity;
+	float frequency;
+};
+
+
 /**
  * @class StatsGenerator
  * @brief Creates frequency statistics between frame movements 
@@ -25,7 +33,9 @@ public:
 	 * @param frame to add
 	 * @param regions of interest
 	 */
-	void add_sample(cv::Mat frame, HandInfo info);//cv::Point sample);
+	MovementSample create_sample(cv::Mat frame, HandInfo info, bool save = false);//cv::Point sample);
+
+	void save_sample(MovementSample sample);
 
 private:
 	int frames = 0;

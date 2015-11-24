@@ -40,7 +40,7 @@ public:
 	 * Get a new frame and process it
 	 * @return the frame processed
 	 */
-	cv::Mat update();
+	MovementSample process(cv::Mat frame);
 
 	/**
 	 * Repeatedly call update
@@ -48,9 +48,16 @@ public:
 	 */
 	int run();
 	
+	cv::Mat next_frame();
+
+	bool is_file();
+	bool is_cam();
+
 private:
 	cv::VideoCapture cap;
 	RegionFinder regionFinder;
 
 	StatsGenerator stats;
+
+	bool loadedfromfile;
 };

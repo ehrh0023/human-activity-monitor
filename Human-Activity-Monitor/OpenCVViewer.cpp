@@ -15,11 +15,13 @@ OpenCVViewer::OpenCVViewer(QWidget *parent) :
 
 void OpenCVViewer::display_scene()
 {
-    cv::Mat frame = app.update();
+    cv::Mat frame = app.next_frame();//process();
+
+    MovementSample sample = app.process(frame);
 
     // calculate two new data points:
-    double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
-    double value = qSin(key); //qSin(key*1.6+qCos(key*1.7)*2)*10 + qSin(key*1.2+0.56)*20 + 26;
+    double key = sample.time;//QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+    double value = sample.frequency;//qSin(key); //qSin(key*1.6+qCos(key*1.7)*2)*10 + qSin(key*1.2+0.56)*20 + 26;
 
     stats->realTimeData(key,value);
 
