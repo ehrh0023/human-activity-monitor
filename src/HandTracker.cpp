@@ -55,7 +55,17 @@ MovementSample HandTracker::process(cv::Mat frame)
     
 	// Find the hands and Face
     HandInfo info;                        // Vector of detected objects                        
-	info = HandFinder::find_hands(frame, regions);   // Find hands and Face and populate detected objects                                     
+	info = HandFinder::find_hands(frame, regions);   // Find hands and Face and populate detected objects      
+	// Display Regions
+	//Mat drawing = Mat::zeros(frame.size(), CV_8UC3);
+    //Region region = info.left_hand;
+    //region.draw(drawing);
+    //region = info.right_hand;
+    //region.draw(drawing);
+    //region = info.head;
+    //region.draw(drawing);
+    //imshow("edges", drawing);
+	                               
                                                            
 	// Add a new sample
 	MovementSample sample = stats.create_sample(frame, info, true);
