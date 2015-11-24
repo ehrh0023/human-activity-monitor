@@ -14,25 +14,24 @@ using namespace cv;
 using namespace std;
 
 
+StatsGenerator::StatsGenerator() :
+	frames(1),
+	savable(false)
+{
+	AlgStartTime = chrono::system_clock::now();
+}
+
 StatsGenerator::StatsGenerator(std::string file_name) :
 	frames(1),
-	file_path(file_name)    
+	savable(false)
 {
     AlgStartTime = chrono::system_clock::now();
-	ofstream outdata;                             //write variable
-	outdata.open("Data.csv", ofstream::out);      // Clear CSV file on first frame
-	if (!outdata.is_open())                       // if not success, throw exception
-    {
-        throw new std::runtime_error("Cannot open file: " + file_path);
-    }
-	outdata.close();
+	
+	set_save_file(file_name);
 }
 
 MovementSample StatsGenerator::create_sample(cv::Mat frame, HandInfo info, bool save)//cv::Point sample)
 {
-	/**************************************************************************************
-	******** Object Tracking***************************************************************
-	**************************************************************************************/
 	// Metric Initializations
 	Point2f handCenter(0, 0);   // Averaged hand center coordinate mid point
 	double distx = 0;    
@@ -108,4 +107,23 @@ void StatsGenerator::save_sample(MovementSample sample)
 	if ((sample.velocity > 0) & (sample.frequency > 0) & (sample.time > 0))
 		outdata << sample.velocity << "," << sample.frequency << "," << sample.time << endl;   // output metrics as "velocity" "frequency" "Time since Algorithm start" in adjacent cells.
 	outdata.close();   // Close CSV file    
+}
+
+void StatsGenerator::set_save_file(std::string filename)
+{
+	file_path = filename;
+
+	ofstream outdata;                             //write variable
+	outdata.open(file_path, ofstream::out);      // Clear CSV file on first frame
+	if (!outdata.is_open())                       // if not success, throw exception
+	{
+		throw new std::runtime_error("Cannot open file: " + file_path);
+	}
+	outdata.close();
+	savable = true;
+}
+
+std::string StatsGenerator::get_save_file()
+{
+	return file_path;
 }

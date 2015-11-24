@@ -68,7 +68,7 @@ MovementSample HandTracker::process(cv::Mat frame)
 	                               
                                                            
 	// Add a new sample
-	MovementSample sample = stats.create_sample(frame, info, true);
+	MovementSample sample = stats.create_sample(frame, info, !stats.get_save_file().empty());
 
 	// Send back that sample
 	return sample;
@@ -119,4 +119,30 @@ bool HandTracker::is_file()
 bool HandTracker::is_cam()
 {
 	return cap.isOpened() && !loadedfromfile;
+}
+
+void HandTracker::restart_video()
+{
+	if (is_file())
+	{
+		cap.set(CV_CAP_PROP_POS_AVI_RATIO, 0);
+	}
+}
+
+void HandTracker::set_stats_file(std::string filename)
+{
+	stats.set_save_file(filename);
+}
+
+std::string HandTracker::get_stats_file()
+{
+	return stats.get_save_file();
+}
+
+cv::Size HandTracker::capture_size()
+{
+	int w = (int)cap.get(CV_CAP_PROP_FRAME_WIDTH);
+	int h = (int)cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+
+	return cv::Size(w, h);
 }

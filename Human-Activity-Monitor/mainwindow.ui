@@ -99,9 +99,10 @@ p, li { white-space: pre-wrap; }
      <string>Run</string>
     </property>
     <addaction name="actionProcess"/>
+    <addaction name="actionEnd_Processing"/>
+    <addaction name="separator"/>
     <addaction name="actionSave_Stats_As"/>
     <addaction name="actionSave_Video_As"/>
-    <addaction name="actionEnd_Processing"/>
    </widget>
    <addaction name="menuFIle"/>
    <addaction name="menuRun"/>

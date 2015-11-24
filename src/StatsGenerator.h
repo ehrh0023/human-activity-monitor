@@ -22,11 +22,17 @@ struct MovementSample
 class StatsGenerator
 {
 public:
+
+	/**
+	 *  Create the generator without saving abilities
+	 */
+	StatsGenerator();
+
 	/**
 	 *  Create the generator
 	 * @param file_name to save to
 	 */
-	StatsGenerator(std::string file_name = "Data.csv");
+	StatsGenerator(std::string file_name);
 
 	/**
 	 * Add a new sample
@@ -36,6 +42,10 @@ public:
 	MovementSample create_sample(cv::Mat frame, HandInfo info, bool save = false);//cv::Point sample);
 
 	void save_sample(MovementSample sample);
+
+	void set_save_file(std::string filename);
+	std::string get_save_file();
+
 
 private:
 	int frames = 0;
@@ -50,4 +60,5 @@ private:
 	std::chrono::duration<double> cycleOccurTime;     // Contains the time duration of a cycle
 
 	std::string file_path;
+	bool savable;
 };
