@@ -16,7 +16,8 @@ using namespace cv;
 float HandFinder::distance_thresh = 300;
 float HandFinder::hand_thresh = 180;
 
-double distancebetweenpoint(Point c, Point d)
+//calculate the distance between two regions
+double distancebetweenpoint(Point c, Point d) 
 {
 	int X_dist = c.x - d.x;
 	int Y_dist = c.y - d.y;
@@ -39,7 +40,7 @@ HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& region
 		if (area > largest_area)
 		{
 			largest_area = area;
-			head = region;
+			head = region; // lable the largest region of the regions "head"
 			//Rect bounding_rect = boundingRect(regions[i].contour);
 		}
 	}
@@ -48,8 +49,8 @@ HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& region
 
 	largest_area = -1;
 	std::pair<Region, Region> hand_pair;
-	std::vector<Region> left_half = get_left_regions(head.center, region_thresh);
-	std::vector<Region> right_half = get_right_regions(head.center, region_thresh);
+	std::vector<Region> left_half = get_left_regions(head.center, region_thresh); // get the regions on the left side of the middle vertical line of the frame
+	std::vector<Region> right_half = get_right_regions(head.center, region_thresh); // get the regions on the right side of the middle vertical line of the frame
 
 
 	HandInfo info;
@@ -59,19 +60,19 @@ HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& region
 		Region region = region_thresh[i];
 
 		std::vector<Region> otherside;
-		if (region.center.x < head.center.x)
+		if (region.center.x < head.center.x) // if the center of the region is less than the head's center, then the region is on the right half
 		{
 			otherside = right_half;
 		}
 		else
 		{
-			otherside = left_half;
+			otherside = left_half; // if the center of the region is greater than the head's center, then the region is on the left half
 		}
 
 		for (int j = 0; j < otherside.size(); j++)
 		{
 			Region other = otherside[j];
-			float combined_area = region.moment.m00 + other.moment.m00;
+			float combined_area = region.moment.m00 + other.moment.m00; // adding two areas
 			if (combined_area > largest_area)
 			{
 				info.success = true;
@@ -97,7 +98,7 @@ std::vector<Region> HandFinder::get_left_regions(cv::Point2f midpoint, const std
 		Region region = regions[i];
 		if (region.center.x < midpoint.x)
 		{
-			left_regions.push_back(region);
+			left_regions.push_back(region); // if the region's center is less than the midpoint, so then set that region is left-regions
 		}
 
 	}
@@ -114,7 +115,7 @@ std::vector<Region> HandFinder::get_right_regions(cv::Point2f midpoint, const st
 		Region region = regions[i];
 		if (region.center.x > midpoint.x)
 		{
-			right_regions.push_back(region);
+			right_regions.push_back(region); // if the region's center is greater than the midpoint, then set that region as the right_region. 
 		}
 
 	}
@@ -129,13 +130,13 @@ std::vector<Region> HandFinder::find_within(float distance, cv::Point2f point, c
 	{
 		Region region = regions[i];
 
-		if (region.center == point)
+		if (region.center == point) // if the region's center equals to head's center, then continue
 			continue;
 
-		double dist = distancebetweenpoint(point, region.center);
+		double dist = distancebetweenpoint(point, region.center); //calculating the distance between the regions' centers
 		if (dist <= distance_thresh)
 		{
-			region_thresh.push_back(region);
+			region_thresh.push_back(region); // if the distance between the center of the region with the head's center is less or equal to thresh, set that region as region_thresh (those are the regions that possibly are hands regions)
 		}
 	}
 	return region_thresh;
