@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->opencv_display->statsVel = ui->customPlot_vel;
     ui->opencv_display->statsFreq = ui->customPlot_freq;
 
-    ui->actionEnd_Processing->setEnabled(false);=
+    ui->actionEnd_Processing->setEnabled(false);
 }
 
 MainWindow::~MainWindow()

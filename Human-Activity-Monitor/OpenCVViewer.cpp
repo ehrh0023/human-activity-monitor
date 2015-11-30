@@ -31,10 +31,12 @@ void OpenCVViewer::display_scene()
             MovementSample sample = app.process(frame);
 
             // calculate two new data points:
-            double key = sample.time;//QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
-            double value = sample.frequency;//qSin(key); //qSin(key*1.6+qCos(key*1.7)*2)*10 + qSin(key*1.2+0.56)*20 + 26;
+            double key = sample.time;
+            double freq = sample.frequency;
+            double vel = sample.velocity;
 
-            stats->realTimeData(key,value);
+            statsVel->realTimeData(key,vel);
+            statsFreq->realTimeData(key,freq);
         }
         if(app.is_cam() && writer.isOpened())
         {
