@@ -13,6 +13,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->opencv_display->statsVel = ui->customPlot_vel;
     ui->opencv_display->statsFreq = ui->customPlot_freq;
 
+    ui->customPlot_freq->plotLayout()->insertRow(0);
+    ui->customPlot_vel->plotLayout()->insertRow(0);
+    ui->customPlot_freq->plotLayout()->addElement(0, 0, new QCPPlotTitle(ui->customPlot_freq, "Frequency"));
+    ui->customPlot_vel->plotLayout()->addElement(0, 0, new QCPPlotTitle(ui->customPlot_vel, "Velocity"));
+
+    ui->customPlot_freq->xAxis->setLabel("Time (s)");
+    ui->customPlot_freq->yAxis->setLabel("Frequency (Hz)");
+
+    ui->customPlot_vel->xAxis->setLabel("Time (s)");
+    ui->customPlot_vel->yAxis->setLabel("Velocity (px/s)");
+
     ui->actionEnd_Processing->setEnabled(false);
 }
 
