@@ -9,9 +9,9 @@
 
 struct MovementSample
 {
-	float time;
-	float velocity;
-	float frequency;
+    std::chrono::duration<double> time = std::chrono::system_clock::duration::zero();
+	double velocity = 0;
+	double frequency = 0;
 };
 
 
@@ -36,29 +36,33 @@ public:
 
 	/**
 	 * Add a new sample
-	 * @param frame to add
 	 * @param regions of interest
+	 * @param save file
 	 */
-	MovementSample create_sample(cv::Mat frame, HandInfo info, bool save = false);//cv::Point sample);
-
+    MovementSample create_sample(HandInfo info, bool save = false);
+    
+    MovementSample oscillation_detection(MovementSample sample, cv::Point point, cv::Point lastPoint, bool save);
+    
 	void save_sample(MovementSample sample);
-
+    
 	void set_save_file(std::string filename);
 	std::string get_save_file();
 
 
 private:
-	int frames = 0;
-	int cycles = 0;
-	double distance = 0;
-	int State = 0;
-	cv::Point handCenterLast;
-	std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> start, end;
-	std::chrono::duration<double> cycleTime;     // Contains the time duration of a cycle
-	std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CycleCompTime;
+  
+	double displacement = 0;
+	int State = 0;   // 1 = UP; 0 = DOWN;
+	cv::Point lastCenter;
+	bool drop = true;
+	double max_height = 0;
+    double min_height = 0;
+    double dist_thresh = 1;
+		
+	std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> start;
 	std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> AlgStartTime;
-	std::chrono::duration<double> cycleOccurTime;     // Contains the time duration of a cycle
-
+	std::chrono::duration<double> decay_time = std::chrono::system_clock::duration::zero();
+	
 	std::string file_path;
 	bool savable;
 };

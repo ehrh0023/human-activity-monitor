@@ -68,7 +68,7 @@ MovementSample HandTracker::process(cv::Mat frame)
 	                               
                                                            
 	// Add a new sample
-	MovementSample sample = stats.create_sample(frame, info, !stats.get_save_file().empty());
+	MovementSample sample = stats.create_sample(info, !stats.get_save_file().empty());
 
 	// Send back that sample
 	return sample;
