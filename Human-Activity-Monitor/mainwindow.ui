@@ -67,13 +67,23 @@ p, li { white-space: pre-wrap; }
      </property>
     </widget>
    </widget>
-   <widget class="StatsGraph" name="customPlot" native="true">
+   <widget class="StatsGraph" name="customPlot_freq" native="true">
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>90</y>
+      <y>89</y>
       <width>301</width>
-      <height>221</height>
+      <height>101</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="StatsGraph" name="customPlot_vel" native="true">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>219</y>
+      <width>301</width>
+      <height>101</height>
      </rect>
     </property>
    </widget>

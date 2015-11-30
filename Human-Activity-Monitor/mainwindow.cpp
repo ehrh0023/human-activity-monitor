@@ -9,7 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->opencv_display->stats = ui->customPlot;
+    ui->opencv_display->statsVel = ui->customPlot_vel;
+    ui->opencv_display->statsFreq = ui->customPlot_freq;
 }
 
 MainWindow::~MainWindow()

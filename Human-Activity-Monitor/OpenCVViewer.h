@@ -14,7 +14,8 @@ public:
 
     HandTracker& getHandTracker();
 
-    StatsGraph* stats;
+    StatsGraph* statsVel;
+    StatsGraph* statsFreq;
 
 public slots:
     void display_scene();
