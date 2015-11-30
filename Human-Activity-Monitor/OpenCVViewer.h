@@ -17,6 +17,12 @@ public:
     StatsGraph* statsVel;
     StatsGraph* statsFreq;
 
+    void setProcessing(bool on);
+
+    void setVideoSave(std::string filename);
+
+    void releaseSaveVideo();
+
 public slots:
     void display_scene();
 
@@ -29,4 +35,7 @@ private:
     QTimer *timer;
 
     HandTracker app;
+    bool shouldProcess;
+
+    cv::VideoWriter writer;
 };

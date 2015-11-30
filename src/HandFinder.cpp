@@ -1,56 +1,143 @@
 #include "HandFinder.h"
 #include "Region.h"
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <iostream>
+#include <utility>
+#include <stdio.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+using namespace std;
 using namespace cv;
 
-std::vector<Region> HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& regions)
-{	
-	std::vector<Region> detectedObj;
-	Region Face, Hand1, Hand2, handCenterObj;
-    //Mat drawFace = Mat::zeros(frame.size(), CV_8UC3);     // Temp matrix for displaying calculated center point
-    Face = regions[0];
-	for (int i = 0; i < regions.size(); i++)              // for each region
-    {
-        Region region = regions[i];
-        // Find Face, hand1, and hand2 
-        if (Face.moment.m00 < region.moment.m00)          // If The largest region (Face) is less than current region
-        { 
-           Hand2 = Hand1;                                 // Shift the largest region to the front
-           Hand1 = Face;                                
-           Face = region;                               
-        }
-        else if (Hand1.moment.m00 < region.moment.m00)    // if the Face is larger but the largest hand is less than the current region
-        {
-           Hand2 = Hand1;                                 // Shift this region in
-           Hand1 = region;
-        }
-        else if (Hand2.moment.m00 < region.moment.m00)    // else if the region is larger than the second hand
-        {
-           Hand2 = region;                                // shift it in to the end
-        }
-        
-        //if (Hand2.center.x < region.center.x)
-        //{                
-        //    Hand1 = Face;
-        //    Face = Hand2;
-        //    Hand2 = region;
-        //}
-        //else if(Face.center.x < region.center.x)
-        //{
-	 	//    Hand1 = Face;
-	 	//    Face = region;
-        //}
-        //else if (Hand1.center.x < region.center.x)
-        //{
-	 	//    Hand1 = region;
-        //}
-                
-    }
-    //Face.draw(drawFace);
-	//Hand1.draw(drawFace);
-	//Hand2.draw(drawFace);
-    //imshow("Face", drawFace);
-	detectedObj.push_back(Hand1);
-	detectedObj.push_back(Face);
-	detectedObj.push_back(Hand2);
-    return detectedObj;
+float HandFinder::distance_thresh = 300;
+float HandFinder::hand_thresh = 180;
+
+//calculate the distance between two regions
+double distancebetweenpoint(Point c, Point d) 
+{
+	int X_dist = c.x - d.x;
+	int Y_dist = c.y - d.y;
+	return sqrt((X_dist*X_dist) + (Y_dist * Y_dist));
+
+}
+
+HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& regions)
+{
+	float largest_area = -1;
+	Region head;
+	
+	//go through all of the regions
+	for (int i = 0; i < regions.size(); i++)
+	{
+		Region region = regions[i];
+
+		//find area of the regions
+		float area = regions[i].moment.m00;
+		if (area > largest_area)
+		{
+			largest_area = area;
+			head = region; // lable the largest region of the regions "head"
+			//Rect bounding_rect = boundingRect(regions[i].contour);
+		}
+	}
+
+	std::vector<Region> region_thresh = find_within(distance_thresh, head.center, regions);
+
+	largest_area = -1;
+	std::pair<Region, Region> hand_pair;
+	std::vector<Region> left_half = get_left_regions(head.center, region_thresh); // get the regions on the left side of the middle vertical line of the frame
+	std::vector<Region> right_half = get_right_regions(head.center, region_thresh); // get the regions on the right side of the middle vertical line of the frame
+
+
+	HandInfo info;
+	info.success = false;
+	for (int i = 0; i < region_thresh.size(); i++)
+	{
+		Region region = region_thresh[i];
+
+		std::vector<Region> otherside;
+		if (region.center.x < head.center.x) // if the center of the region is less than the head's center, then the region is on the right half
+		{
+			otherside = right_half;
+		}
+		else
+		{
+			otherside = left_half; // if the center of the region is greater than the head's center, then the region is on the left half
+		}
+
+		for (int j = 0; j < otherside.size(); j++)
+		{
+			Region other = otherside[j];
+			float combined_area = region.moment.m00 + other.moment.m00; // adding two areas
+			if (combined_area > largest_area)
+			{
+				info.success = true;
+				largest_area = combined_area;
+				hand_pair.first = region;
+				hand_pair.second = other;
+			}
+		}
+	}
+	
+	info.left_hand = hand_pair.first;
+	info.head =  head;
+	info.right_hand = hand_pair.second;
+	return info;
+}
+
+std::vector<Region> HandFinder::get_left_regions(cv::Point2f midpoint, const std::vector<Region>& regions)
+{
+	std::vector<Region> left_regions;
+
+	for (int i = 0; i < left_regions.size(); i++)
+	{
+		Region region = regions[i];
+		if (region.center.x < midpoint.x)
+		{
+			left_regions.push_back(region); // if the region's center is less than the midpoint, so then set that region is left-regions
+		}
+
+	}
+
+	return left_regions;
+}
+
+std::vector<Region> HandFinder::get_right_regions(cv::Point2f midpoint, const std::vector<Region>& regions)
+{
+	std::vector<Region> right_regions;
+
+	for (int i = 0; i < regions.size(); i++)
+	{
+		Region region = regions[i];
+		if (region.center.x > midpoint.x)
+		{
+			right_regions.push_back(region); // if the region's center is greater than the midpoint, then set that region as the right_region. 
+		}
+
+	}
+
+	return right_regions;
+}
+
+std::vector<Region> HandFinder::find_within(float distance, cv::Point2f point, const std::vector<Region>& regions)
+{
+	std::vector<Region> region_thresh;
+	for (int i = 0; i < regions.size(); i++)
+	{
+		Region region = regions[i];
+
+		if (region.center == point) // if the region's center equals to head's center, then continue
+			continue;
+
+		double dist = distancebetweenpoint(point, region.center); //calculating the distance between the regions' centers
+		if (dist <= distance_thresh)
+		{
+			region_thresh.push_back(region); // if the distance between the center of the region with the head's center is less or equal to thresh, set that region as region_thresh (those are the regions that possibly are hands regions)
+		}
+	}
+	return region_thresh;
 }

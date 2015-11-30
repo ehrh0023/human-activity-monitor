@@ -31,11 +31,17 @@ void RegionFinder::find(Mat image, std::vector<Region>& regions)
 	}
 
 	// Edge Detection
-	//Mat canny_output;
-	//Canny(filtered_img, canny_output, thresh, thresh * 2, 3);
 	Mat output;
 	classifier.predict(image, output);
-	imshow("output", output);
+
+	//morphological opening (removes small objects from the foreground)
+    //erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+    //dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+    
+	//morphological closing (removes small holes from the foreground)
+    //dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+    //erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+	//imshow("output", output);
 
 	// Find contours
 	vector<vector<Point> > contours;

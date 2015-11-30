@@ -5,6 +5,7 @@
 
 OpenCVViewer::OpenCVViewer(QWidget *parent) :
     QWidget(parent),
+    shouldProcess(false),
     app(0) //"../assets/flap_blur.avi"
 {
     timer = new QTimer(this);
@@ -15,15 +16,32 @@ OpenCVViewer::OpenCVViewer(QWidget *parent) :
 
 void OpenCVViewer::display_scene()
 {
-    cv::Mat frame = app.update();
+    cv::Mat frame = app.next_frame();
 
-    // calculate two new data points:
-    double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
-    double value = qSin(key); //qSin(key*1.6+qCos(key*1.7)*2)*10 + qSin(key*1.2+0.56)*20 + 26;
+    if(frame.empty())
+    {
+        app.restart_video();
+        frame = app.next_frame();
+    }
 
-    stats->realTimeData(key,value);
+    if(!frame.empty())
+    {
+        if(shouldProcess)
+        {
+            MovementSample sample = app.process(frame);
 
-    showImage(frame);
+            // calculate two new data points:
+            double key = sample.time;//QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+            double value = sample.frequency;//qSin(key); //qSin(key*1.6+qCos(key*1.7)*2)*10 + qSin(key*1.2+0.56)*20 + 26;
+
+            stats->realTimeData(key,value);
+        }
+        if(app.is_cam() && writer.isOpened())
+        {
+            writer.write(frame);
+        }
+        showImage(frame);
+    }
 }
 
 bool OpenCVViewer::showImage( cv::Mat image )
@@ -80,4 +98,20 @@ void OpenCVViewer::paintEvent(QPaintEvent *event)
 HandTracker& OpenCVViewer::getHandTracker()
 {
     return app;
+}
+
+
+void OpenCVViewer::setProcessing(bool on)
+{
+    shouldProcess = on;
+}
+
+void OpenCVViewer::setVideoSave(std::string filename)
+{
+    writer.open(filename, CV_FOURCC('M','P','E','G'), 30, app.capture_size(), true);
+}
+
+void OpenCVViewer::releaseSaveVideo()
+{
+    writer.release();
 }

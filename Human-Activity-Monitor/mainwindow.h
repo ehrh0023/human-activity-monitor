@@ -37,6 +37,8 @@ private slots:
 
     void on_actionSave_Video_As_triggered();
 
+    void on_actionEnd_Processing_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTimer dataTimer;
