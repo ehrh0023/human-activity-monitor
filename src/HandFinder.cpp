@@ -27,16 +27,16 @@ double distancebetweenpoint(Point c, Point d)
 
 HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& regions)
 {
-	float largest_area = -1;
+	double largest_area = -1;
 	Region head;
 	
 	//go through all of the regions
-	for (int i = 0; i < regions.size(); i++)
+	for (size_t i = 0; i < regions.size(); i++)
 	{
 		Region region = regions[i];
 
 		//find area of the regions
-		float area = regions[i].moment.m00;
+		double area = regions[i].moment.m00;
 		if (area > largest_area)
 		{
 			largest_area = area;
@@ -55,7 +55,7 @@ HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& region
 
 	HandInfo info;
 	info.success = false;
-	for (int i = 0; i < region_thresh.size(); i++)
+	for (size_t i = 0; i < region_thresh.size(); i++)
 	{
 		Region region = region_thresh[i];
 
@@ -69,10 +69,10 @@ HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& region
 			otherside = left_half; // if the center of the region is greater than the head's center, then the region is on the left half
 		}
 
-		for (int j = 0; j < otherside.size(); j++)
+		for (size_t j = 0; j < otherside.size(); j++)
 		{
 			Region other = otherside[j];
-			float combined_area = region.moment.m00 + other.moment.m00; // adding two areas
+			double combined_area = region.moment.m00 + other.moment.m00; // adding two areas
 			if (combined_area > largest_area)
 			{
 				info.success = true;
@@ -93,7 +93,7 @@ std::vector<Region> HandFinder::get_left_regions(cv::Point2f midpoint, const std
 {
 	std::vector<Region> left_regions;
 
-	for (int i = 0; i < left_regions.size(); i++)
+	for (size_t i = 0; i < left_regions.size(); i++)
 	{
 		Region region = regions[i];
 		if (region.center.x < midpoint.x)
@@ -110,7 +110,7 @@ std::vector<Region> HandFinder::get_right_regions(cv::Point2f midpoint, const st
 {
 	std::vector<Region> right_regions;
 
-	for (int i = 0; i < regions.size(); i++)
+	for (size_t i = 0; i < regions.size(); i++)
 	{
 		Region region = regions[i];
 		if (region.center.x > midpoint.x)
@@ -126,7 +126,7 @@ std::vector<Region> HandFinder::get_right_regions(cv::Point2f midpoint, const st
 std::vector<Region> HandFinder::find_within(float distance, cv::Point2f point, const std::vector<Region>& regions)
 {
 	std::vector<Region> region_thresh;
-	for (int i = 0; i < regions.size(); i++)
+	for (size_t i = 0; i < regions.size(); i++)
 	{
 		Region region = regions[i];
 

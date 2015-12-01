@@ -15,7 +15,6 @@ using namespace std;
 
 
 StatsGenerator::StatsGenerator() :
-	//frames(1),
 	savable(false)
 {
 	AlgStartTime = chrono::system_clock::now();
@@ -33,7 +32,7 @@ MovementSample StatsGenerator::create_sample(HandInfo info, bool save)
 {
    int head_thresh = 100;   // Threshold for hands above head
    MovementSample sample;   // TIME, Velocity, Frequency                         
-   Point center(0,0);       // Center point of hands                        
+   Point2f center(0,0);       // Center point of hands                        
                                                                             
    center.y = (info.left_hand.center.y + info.right_hand.center.y) / 2;     // Averaged y hand center mid point
    center.x = (info.left_hand.center.x + info.right_hand.center.x) / 2;     // Averaged x hand center mid ponit 
@@ -46,40 +45,39 @@ MovementSample StatsGenerator::create_sample(HandInfo info, bool save)
    }
    else
    {
-       drop = true;           // Drop frame if hands are above center of head
-       sample.velocity = 0;   
-       sample.frequency = 0;
-       sample.time = std::chrono::system_clock::duration::zero();
+       drop = true;            // Drop frame if hands are above center of head
+       sample.velocity = 0;    // Report zero velocity
+       sample.frequency = 0;   // Report zero frequency
+       sample.time = std::chrono::system_clock::duration::zero();   // Report zero time
        return sample;
    }                                                                                                             
 }
 
 MovementSample StatsGenerator::oscillation_detection(MovementSample sample, Point point, Point lastPoint, bool save)
 {
-   std::chrono::duration<double> timeDiff;
+   chrono::duration<double> timeDiff;
    displacement = point.y - lastPoint.y; 
    if (State == 1) // UP
    {
        if (displacement > 0) // Moving DOWN
        {
-          if ((min_height - max_height) > dist_thresh)   // Distance travelled is larger than threshold
+          if ((min_height - max_height) > dist_thresh)         // Distance travelled is larger than threshold
           { 
              timeDiff = chrono::system_clock::now() - start;   // Calculate duration of cycle
              start = chrono::system_clock::now();              // Reset start of cycle
              if (drop)
              {
-                drop = false;   // Clear drop flag 
+                drop = false;   // Clear drop frame flag 
              }
              else
              { 
-				sample.frequency = 1 / timeDiff.count();
-				displacement = 2 * min_height - max_height + lastPoint.y;
-				sample.velocity = displacement / timeDiff.count();
-				sample.time = chrono::system_clock::now() - AlgStartTime;
-				decay_time = timeDiff + sample.time;                
+				sample.frequency = 1 / timeDiff.count();                    // calculate frequency in cycles per second
+				displacement = 2 * min_height - max_height + lastPoint.y;   // calculate displacement in pixels
+				sample.velocity = displacement / timeDiff.count();          // calculate velocity in pixels per second
+				sample.time = chrono::system_clock::now() - AlgStartTime;   // calculate time since start of algorithm in seconds
              }
              
-			 State = 0;              // Transition state to moving DOWN
+			 State = 0;   // Transition state to moving DOWN
           }
           max_height = lastPoint.y;           
        }
@@ -91,12 +89,6 @@ MovementSample StatsGenerator::oscillation_detection(MovementSample sample, Poin
 	     min_height = lastPoint.y;   // Found a minimum point
 	     State = 1;                  // Transition to moving UP
       }
-   }
-   if (sample.time > decay_time)
-   {
-      sample.frequency = 0;
-      sample.velocity = 0;
-      sample.time = chrono::system_clock::duration::zero();
    }
    // Output Metrics 
    if(save)
@@ -111,13 +103,13 @@ void StatsGenerator::save_sample(MovementSample sample)
 {
 	ofstream outdata;   //write variable
 
-	outdata.open(file_path, ofstream::app);                        //open the file to write to    
-	if (!outdata.is_open())                                        // if not success, throw exception
+	outdata.open(file_path, ofstream::app);   //open the file to write to    
+	if (!outdata.is_open())                   // if not success, throw exception
 	{
 		throw new std::runtime_error("Cannot open file: " + file_path);
 	}
-	if ((sample.velocity > 0) & (sample.frequency > 0) & (sample.time.count() > 0))
-		outdata << sample.velocity << "," << sample.frequency << "," << sample.time.count() << endl;   // output metrics as "velocity" "frequency" "Time since Algorithm start" in adjacent cells.
+	// Output metrics as "velocity" "frequency" "Time since Algorithm start" in adjacent cells to data.csv
+	outdata << sample.velocity << "," << sample.frequency << "," << sample.time.count() << endl;
 	outdata.close();   // Close CSV file    
 }
 
@@ -125,8 +117,8 @@ void StatsGenerator::set_save_file(std::string filename)
 {
 	file_path = filename;
 
-	ofstream outdata;                             //write variable
-	outdata.open(file_path, ofstream::out);      // Clear CSV file on first frame
+	ofstream outdata;                             // Write variable
+	outdata.open(file_path, ofstream::out);       // Clear CSV file on first frame
 	if (!outdata.is_open())                       // if not success, throw exception
 	{
 		throw new std::runtime_error("Cannot open file: " + file_path);

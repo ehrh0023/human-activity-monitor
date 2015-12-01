@@ -14,7 +14,7 @@ RegionFinder::RegionFinder(int threshold /*= 100*/)
 
 RegionFinder::~RegionFinder()
 {
-	for (int i = 0; i < filters.size(); i++)
+	for (size_t i = 0; i < filters.size(); i++)
 	{
 		delete filters[i];
 	}
@@ -24,7 +24,7 @@ void RegionFinder::find(Mat image, std::vector<Region>& regions)
 {
 	// Filter the image
 	Mat filtered_img = image;
-    for (int i = 0; i < filters.size(); i++)
+    for (size_t i = 0; i < filters.size(); i++)
 	{
         Filter* filter = filters[i];
 		filtered_img = filter->filter(filtered_img);
