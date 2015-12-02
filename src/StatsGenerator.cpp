@@ -30,10 +30,12 @@ StatsGenerator::StatsGenerator(std::string file_name) :
 
 MovementSample StatsGenerator::create_sample(HandInfo info, bool save)
 {
-   int head_thresh = 100;   // Threshold for hands above head
-   MovementSample sample;   // TIME, Velocity, Frequency                         
+   int head_thresh = 100;   // Threshold for hands above head                     
    Point2f center(0,0);       // Center point of hands                        
-                                                                            
+
+   MovementSample sample;   // TIME, Velocity, Frequency    
+   sample.time = (chrono::system_clock::now() - AlgStartTime).count() * clock_delta; // calculate time since start of algorithm in seconds
+
    center.y = (info.left_hand.center.y + info.right_hand.center.y) / 2;     // Averaged y hand center mid point
    center.x = (info.left_hand.center.x + info.right_hand.center.x) / 2;     // Averaged x hand center mid ponit 
                                                                             
@@ -48,7 +50,6 @@ MovementSample StatsGenerator::create_sample(HandInfo info, bool save)
        drop = true;            // Drop frame if hands are above center of head
        sample.velocity = 0;    // Report zero velocity
        sample.frequency = 0;   // Report zero frequency
-       sample.time = std::chrono::system_clock::duration::zero();   // Report zero time
        return sample;
    }                                                                                                             
 }
@@ -71,10 +72,9 @@ MovementSample StatsGenerator::oscillation_detection(MovementSample sample, Poin
              }
              else
              { 
-				sample.frequency = 1 / timeDiff.count();                    // calculate frequency in cycles per second
+				sample.frequency = 1 / timeDiff.count();					// calculate frequency in cycles per second
 				displacement = 2 * min_height - max_height + lastPoint.y;   // calculate displacement in pixels
-				sample.velocity = displacement / timeDiff.count();          // calculate velocity in pixels per second
-				sample.time = chrono::system_clock::now() - AlgStartTime;   // calculate time since start of algorithm in seconds
+				sample.velocity = displacement * sample.frequency;          // calculate velocity in pixels per second
              }
              
 			 State = 0;   // Transition state to moving DOWN
@@ -109,7 +109,7 @@ void StatsGenerator::save_sample(MovementSample sample)
 		throw new std::runtime_error("Cannot open file: " + file_path);
 	}
 	// Output metrics as "velocity" "frequency" "Time since Algorithm start" in adjacent cells to data.csv
-	outdata << sample.velocity << "," << sample.frequency << "," << sample.time.count() << endl;
+	outdata << sample.velocity << "," << sample.frequency << "," << sample.time << endl;
 	outdata.close();   // Close CSV file    
 }
 

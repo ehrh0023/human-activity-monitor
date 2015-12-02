@@ -22,14 +22,6 @@ RegionFinder::~RegionFinder()
 
 void RegionFinder::find(Mat image, std::vector<Region>& regions)
 {
-	// Filter the image
-	Mat filtered_img = image;
-    for (size_t i = 0; i < filters.size(); i++)
-	{
-        Filter* filter = filters[i];
-		filtered_img = filter->filter(filtered_img);
-	}
-
 	// Edge Detection
 	Mat output;
 	classifier.predict(image, output);

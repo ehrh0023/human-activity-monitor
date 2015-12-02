@@ -6,6 +6,7 @@
 OpenCVViewer::OpenCVViewer(QWidget *parent) :
     QWidget(parent),
     shouldProcess(false),
+    sampidx(0),
     app(0) //"../assets/flap_blur.avi"
 {
     timer = new QTimer(this);
@@ -28,15 +29,29 @@ void OpenCVViewer::display_scene()
     {
         if(shouldProcess)
         {
-            MovementSample sample = app.process(frame);
+            samples[sampidx] = app.process(frame);
 
             // calculate two new data points:
-            double key = sample.time;
-            double freq = sample.frequency;
-            double vel = sample.velocity;
+            double key = samples[sampidx].time;
+            double freq = samples[sampidx].frequency;
+            double vel = samples[sampidx].velocity;
+
+            if(freq != 0)
+            {
+                int frame_count = 1/(0.0333333 * freq);
+                for(int i = frame_count; i > 1; i--)
+                {
+                    int j = (sampidx - i) % 30;
+
+                    statsVel->replace(samples[j].time,vel);
+                    statsFreq->replace(samples[j].time,freq);
+                }
+            }
 
             statsVel->realTimeData(key,vel);
             statsFreq->realTimeData(key,freq);
+
+            sampidx = ++sampidx % 30;
         }
         if(app.is_cam() && writer.isOpened())
         {

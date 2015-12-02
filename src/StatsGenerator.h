@@ -9,9 +9,9 @@
 
 struct MovementSample
 {
-    std::chrono::duration<double> time = std::chrono::system_clock::duration::zero();
+    double time = 0;
 	double velocity = 0;
-	double frequency = 0;
+    double frequency = 0;
 };
 
 
@@ -62,6 +62,8 @@ private:
 	double displacement = 0;   // displacement between current y point and last y point 	
 	std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> start;          // start of cycle time
 	std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> AlgStartTime;   // start of algorithm time 
+	const double clock_delta = 0.000000001;
+
 	std::string file_path;
 	bool savable;
 };

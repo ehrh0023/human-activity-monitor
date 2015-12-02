@@ -12,4 +12,6 @@ public:
     StatsGraph(QWidget *parent = 0);
 
     void realTimeData(double key, double value);
+
+    void replace(double key, double value);
 };

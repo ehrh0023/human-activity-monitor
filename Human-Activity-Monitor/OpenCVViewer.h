@@ -37,5 +37,9 @@ private:
     HandTracker app;
     bool shouldProcess;
 
+    MovementSample samples[30];
+    int sampidx;
+
+
     cv::VideoWriter writer;
 };
