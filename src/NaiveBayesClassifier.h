@@ -11,10 +11,8 @@ class NaiveBayesClassifier
 
 	static const int array_size = 256;
 
-	int colorCount[array_size][array_size];
-	int maskedCount[array_size][array_size];
-	long int pixelcount;
-	long int skincount;
+	int nskin_count[array_size][array_size];
+	int skin_count[array_size][array_size];
 
 public:
 

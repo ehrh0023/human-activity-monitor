@@ -9,7 +9,7 @@ RegionFinder::RegionFinder(int threshold /*= 100*/)
 	:thresh(threshold)
 {
 	// Initialize the classifier
-	classifier.load("../assets/BayesPresetXYZ");
+	classifier.load("../assets/BayesPreset");
 }
 
 RegionFinder::~RegionFinder()

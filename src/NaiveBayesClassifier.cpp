@@ -13,14 +13,12 @@ NaiveBayesClassifier::NaiveBayesClassifier()
 
 void NaiveBayesClassifier::clear()
 {
-	pixelcount = 0;
-	skincount = 0;
 	for (int i = 0; i < array_size; i++)
 	{
 		for (int j = 0; j < array_size; j++)
 		{
-			colorCount[i][j] = 0;
-			maskedCount[i][j] = 0;
+			skin_count[i][j] = 0;
+			nskin_count[i][j] = 0;
 		}
 	}
 }
@@ -50,15 +48,16 @@ void NaiveBayesClassifier::train(cv::Mat const& image, cv::Mat const& mask, bool
 			uint8_t x = pixelPtr[i*imageXYZ.cols*cn + j*cn + 0]; // x
 			uint8_t y = pixelPtr[i*imageXYZ.cols*cn + j*cn + 1]; // y
 			uint8_t z = pixelPtr[i*imageXYZ.cols*cn + j*cn + 2]; // x
-			colorCount[x][z]++;
-			pixelcount++;
 
 			if (maskPtr[i*imageXYZ.cols*cn + j*cn + 0]    > 100
 				&& maskPtr[i*imageXYZ.cols*cn + j*cn + 1] > 100
 				&& maskPtr[i*imageXYZ.cols*cn + j*cn + 2] > 100)
 			{
-				maskedCount[x][z]++;
-				skincount++;
+				skin_count[x][z]++;
+			}
+			else
+			{
+				nskin_count[x][z]++;
 			}
 		}
 	}
@@ -76,9 +75,6 @@ void NaiveBayesClassifier::predict(cv::Mat const& image, cv::Mat& output)
 
 	int cn = imageXYZ.channels();
 
-	float skin = skincount / (float)pixelcount;
-	float nskin = (1 - skin);
-
 	for (int i = 0; i < imageXYZ.rows; i++)
 	{
 		for (int j = 0; j < imageXYZ.cols; j++)
@@ -87,12 +83,7 @@ void NaiveBayesClassifier::predict(cv::Mat const& image, cv::Mat& output)
 			uint8_t y = pixelPtr[i*imageXYZ.cols*cn + j*cn + 1]; // y
 			uint8_t z = pixelPtr[i*imageXYZ.cols*cn + j*cn + 2]; // z
 
-			float cskin = maskedCount[x][z] / (float)skincount;
-			float skinc = cskin * skin;
-			float cnskin = (colorCount[x][z] - maskedCount[x][z]) / (float)(pixelcount - skincount);
-			float skinnc = cnskin * nskin;
-
-			if (skinc > skinnc)
+			if (skin_count[x][z] > nskin_count[x][z])
 			{
 				outPtr[i*imageXYZ.cols + j + 0] = 255; // x
 			}
@@ -114,13 +105,12 @@ void NaiveBayesClassifier::save(std::string filename)
 		throw std::runtime_error("Could not open file: " + filename);
 	}
 
-	myfile << pixelcount << ' ' << skincount << std::endl;
 
 	for (int i = 0; i < array_size; i++)
 	{
 		for (int j = 0; j < array_size; j++)
 		{
-			myfile << colorCount[i][j] << ' ';
+			myfile << skin_count[i][j] << ' ';
 		}
 
 		myfile << std::endl;
@@ -132,7 +122,7 @@ void NaiveBayesClassifier::save(std::string filename)
 	{
 		for (int j = 0; j < array_size; j++)
 		{
-			myfile << maskedCount[i][j] << ' ';
+			myfile << nskin_count[i][j] << ' ';
 		}
 
 		myfile << std::endl;
@@ -151,13 +141,11 @@ void NaiveBayesClassifier::load(std::string filename)
 		throw std::runtime_error("Could not open file: " + filename);
 	}
 
-	myfile >> pixelcount >> skincount;
-
 	for (int i = 0; i < array_size; i++)
 	{
 		for (int j = 0; j < array_size; j++)
 		{
-			myfile >> colorCount[i][j];
+			myfile >> skin_count[i][j];
 		}
 	}
 
@@ -165,7 +153,7 @@ void NaiveBayesClassifier::load(std::string filename)
 	{
 		for (int j = 0; j < array_size; j++)
 		{
-			myfile >> maskedCount[i][j];
+			myfile >> nskin_count[i][j];
 		}
 	}
 
