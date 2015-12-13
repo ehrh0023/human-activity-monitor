@@ -86,11 +86,11 @@ HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& region
 			if (combined_area > largest_area)
 			{
 				//largest_area = combined_area;
-				hand_pair.first = region;
-				hand_pair.second = other;
-			    info.left_hand = hand_pair.first;
+				//hand_pair.first = region;
+				//hand_pair.second = other;
+			    info.left_hand = region;
 	            info.head =  head;
-	            info.right_hand = hand_pair.second;
+	            info.right_hand = other;
 	            info.success = true;
 	            return info;
 			}
