@@ -47,19 +47,24 @@ HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& region
 	}
 	if (largest_area == -1)
 	{
-    	info.success = false;
 		return info;
 	}
 
 	std::vector<Region> region_thresh = find_within(distance_thresh, head.center, regions);
 	if(region_thresh.size() == 0)
 	{
-    	info.success = false;
     	return info;
-    }
-	std::pair<Region, Region> hand_pair;
+	}
+
 	std::vector<Region> left_half = get_left_regions(head.center, region_thresh); // get the regions on the left side of the middle vertical line of the frame
 	std::vector<Region> right_half = get_right_regions(head.center, region_thresh); // get the regions on the right side of the middle vertical line of the frame
+	if (left_half.empty() || right_half.empty())
+	{
+		return info;
+	}
+
+	largest_area = -1;
+	std::pair<Region, Region> hand_pair;
 	for (size_t i = 0; i < region_thresh.size(); i++)
 	{
 		Region region = region_thresh[i];
@@ -73,11 +78,6 @@ HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& region
 		{
 			otherside = left_half; // if the center of the region is greater than the head's center, then the region is on the left half
 		}
-		if (otherside.size() == 0)
-		{
-    		info.success = false;
-    		return info;
-        }
 
 		for (size_t j = 0; j < otherside.size(); j++)
 		{ 
@@ -85,27 +85,22 @@ HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& region
 			double combined_area = region.moment.m00 + other.moment.m00; // adding two areas
 			if (combined_area > largest_area)
 			{
-				//largest_area = combined_area;
-				//hand_pair.first = region;
-				//hand_pair.second = other;
-			    info.left_hand = region;
-	            info.head =  head;
-	            info.right_hand = other;
-	            info.success = true;
-	            return info;
+				largest_area = combined_area;
+				hand_pair.first = region;
+				hand_pair.second = other;
 			}
-			else
-			   info.success = false;
-			   return info;
-		}
-		
+		}	
 	}
     
-	//if (largest_area == -1)
-	//{
-	//	return info;
-	//}
-	
+	if (largest_area == -1)
+	{
+		return info;
+	}
+
+	info.left_hand = hand_pair.first;
+	info.head = head;
+	info.right_hand = hand_pair.second;
+	info.success = true;
 
 	return info;
 }
