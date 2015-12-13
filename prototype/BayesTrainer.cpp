@@ -1,6 +1,6 @@
 #include <opencv2/opencv.hpp>
 #include <cstdint>
-#include "../src/NaiveBayesClassifier.h"
+#include "../src/GaussianBayesClassifier.h"
 
 using namespace cv;
 using namespace std;
@@ -8,7 +8,7 @@ using namespace std;
 RNG rng(12345);
 int main(int, char**)
 {
-	NaiveBayesClassifier bayes;
+	GaussianBayesClassifier bayes;
 
 	for (int i = 1; i <= 12; ++i)
 	{
@@ -32,8 +32,6 @@ int main(int, char**)
 
 	bayes.save("BayesPreset");
 
-
-
 	Mat frame;
 	Mat frame_gray;
 	Mat canny_output;
@@ -53,7 +51,7 @@ int main(int, char**)
 		bayes.predict(frame, output);
 
 		imshow("orig", frame);
-		imshow("edges", output);
+		imshow("output", output);
 
 		if (!cap.read(frame)) // get a new frame from camera
 			break;

@@ -1,6 +1,7 @@
 #include "HandTracker.h"
 #include <iostream>
 #include <stdexcept>
+#include "Stats.h"
 
 int main(int, char**)
 {
