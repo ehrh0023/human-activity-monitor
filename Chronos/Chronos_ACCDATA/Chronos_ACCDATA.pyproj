@@ -12,6 +12,10 @@
     <OutputPath>.</OutputPath>
     <Name>Chronos_ACCDATA</Name>
     <RootNamespace>Chronos_ACCDATA</RootNamespace>
+    <InterpreterId>
+    </InterpreterId>
+    <InterpreterVersion>
+    </InterpreterVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
