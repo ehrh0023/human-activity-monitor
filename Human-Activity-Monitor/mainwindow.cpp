@@ -54,7 +54,7 @@ void MainWindow::on_actionOpen_File_triggered()
             this,
             tr("Open File"),
             "C://",
-            "All Files (*.*);;AVI File (*.avi);;MP4 File(*.mp4)");
+            "AVI File (*.avi);;MP4 File(*.mp4);;MPEG File (*.mpg)");
 
     ui->opencv_display->getHandTracker().switch_source(filename.toUtf8().constData());
     ui->actionSave_Video_As->setEnabled(false);
