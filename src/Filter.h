@@ -2,7 +2,6 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include "HSVRange.h"
-#include "NaiveBayesClassifier.h"
 
 /**
  * @class Filter

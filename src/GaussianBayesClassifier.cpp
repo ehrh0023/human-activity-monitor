@@ -39,9 +39,9 @@ void GaussianBayesClassifier::train(cv::Mat const& image, cv::Mat const& mask, b
 	{
 		for (int j = 0; j < img.cols; j++)
 		{
-			float R = pixelPtr[i*img.cols*cn + j*cn + 0]; // R
+			float B = pixelPtr[i*img.cols*cn + j*cn + 0]; // B
 			float G = pixelPtr[i*img.cols*cn + j*cn + 1]; // G
-			float B = pixelPtr[i*img.cols*cn + j*cn + 2]; // B
+			float R = pixelPtr[i*img.cols*cn + j*cn + 2]; // R
 
 			if (maskPtr[i*img.cols*cn + j*cn + 0]    > 100
 				&& maskPtr[i*img.cols*cn + j*cn + 1] > 100
@@ -89,9 +89,9 @@ void GaussianBayesClassifier::predict(cv::Mat const& image, cv::Mat& output)
 	{
 		for (int j = 0; j < img.cols; j++)
 		{
-			float R = pixelPtr[i*img.cols*cn + j*cn + 0]; // R
+			float B = pixelPtr[i*img.cols*cn + j*cn + 0]; // B
 			float G = pixelPtr[i*img.cols*cn + j*cn + 1]; // G
-			float B = pixelPtr[i*img.cols*cn + j*cn + 2]; // B
+			float R = pixelPtr[i*img.cols*cn + j*cn + 2]; // R
 			
 			if (R == 0 && G == 0 && B == 0)
 				continue;
