@@ -36,6 +36,13 @@ MovementSample StatsGenerator::create_sample(HandInfo info, bool save)
    MovementSample sample;   // TIME, Velocity, Frequency    
    sample.time = (chrono::system_clock::now() - AlgStartTime).count() * clock_delta; // calculate time since start of algorithm in seconds
 
+   if (!info.success)
+   {
+	   sample.velocity = 0;    // Report zero velocity
+	   sample.frequency = 0;   // Report zero frequency
+	   return sample;
+   }
+
    center.y = (info.left_hand.center.y + info.right_hand.center.y) / 2;     // Averaged y hand center mid point
    center.x = (info.left_hand.center.x + info.right_hand.center.x) / 2;     // Averaged x hand center mid ponit 
                                                                             

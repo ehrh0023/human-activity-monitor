@@ -27,9 +27,10 @@ double distancebetweenpoint(Point c, Point d)
 
 HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& regions)
 {
+	HandInfo info;
+
 	double largest_area = -1;
 	Region head;
-	
 	//go through all of the regions
 	for (size_t i = 0; i < regions.size(); i++)
 	{
@@ -45,6 +46,11 @@ HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& region
 		}
 	}
 
+	if (largest_area == -1)
+	{
+		return info;
+	}
+
 	std::vector<Region> region_thresh = find_within(distance_thresh, head.center, regions);
 
 	largest_area = -1;
@@ -52,9 +58,6 @@ HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& region
 	std::vector<Region> left_half = get_left_regions(head.center, region_thresh); // get the regions on the left side of the middle vertical line of the frame
 	std::vector<Region> right_half = get_right_regions(head.center, region_thresh); // get the regions on the right side of the middle vertical line of the frame
 
-
-	HandInfo info;
-	info.success = false;
 	for (size_t i = 0; i < region_thresh.size(); i++)
 	{
 		Region region = region_thresh[i];
@@ -75,17 +78,22 @@ HandInfo HandFinder::find_hands(cv::Mat frame, const std::vector<Region>& region
 			double combined_area = region.moment.m00 + other.moment.m00; // adding two areas
 			if (combined_area > largest_area)
 			{
-				info.success = true;
 				largest_area = combined_area;
 				hand_pair.first = region;
 				hand_pair.second = other;
 			}
 		}
 	}
+
+	if (largest_area == -1)
+	{
+		return info;
+	}
 	
 	info.left_hand = hand_pair.first;
 	info.head =  head;
 	info.right_hand = hand_pair.second;
+	info.success = true;
 	return info;
 }
 
