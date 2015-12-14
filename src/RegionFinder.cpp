@@ -27,13 +27,13 @@ void RegionFinder::find(Mat image, std::vector<Region>& regions)
 	classifier.predict(image, output);
 
 	//morphological opening (removes small objects from the foreground)
-    //erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
-    //dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+    erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+    dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
     
 	//morphological closing (removes small holes from the foreground)
-    //dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
-    //erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
-	//imshow("output", output);
+    dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+    erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+	imshow("output", output);
 
 	// Find contours
 	vector<vector<Point> > contours;
