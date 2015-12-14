@@ -49,9 +49,9 @@ while True:
     if signy == 1:
      accely = ((~accely&0xFF) + 1)*(-1)
      
-    accelx = ((accelx*18*0.5) + (prevx*0.5))#- firstx)
-    accely = ((accely*18*0.5) + (prevy*0.5))#- firsty)
-    accelz = ((accely*18*0.5) + (prevz*0.5))#- firstz)
+    accelx = ((accelx*18*0.5) + (prevx*0.5)+0.09)#- firstx)
+    accely = ((accely*18*0.5) + (prevy*0.5)+0.09)#- firsty)
+    accelz = ((accely*18*0.5) + (prevz*0.5)+0.09)#- firstz)
     prevx  = accelx
     prevy  = accely
     prevz  = accelz
