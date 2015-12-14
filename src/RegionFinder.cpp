@@ -33,7 +33,7 @@ void RegionFinder::find(Mat image, std::vector<Region>& regions)
 	//morphological closing (removes small holes from the foreground)
     dilate(output, output, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
     erode(output, output, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
-	imshow("output", output);
+	//imshow("output", output);
 
 	// Find contours
 	vector<vector<Point> > contours;
