@@ -2,6 +2,7 @@
 #include <vector>
 #include "Filter.h"
 #include "Region.h"
+#include "GaussianBayesClassifier.h"
 
 /**
  * @class RegionFinder
@@ -11,7 +12,7 @@ class RegionFinder
 {
 	int thresh;   /** How well does it detect edges */
 	static const int max_thresh;   /** Maximum amount of threshold */
-	NaiveBayesClassifier classifier;
+	GaussianBayesClassifier classifier;
 
 public:
 

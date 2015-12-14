@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     ../src/StatsGenerator.cpp \
     ../src/HandFinder.cpp \
     ../lib/qcustomplot/qcustomplot.cpp \
-    StatsGraph.cpp
+    StatsGraph.cpp \
+    ../src/GaussianBayesClassifier.cpp
 
 HEADERS  += mainwindow.h \
     OpenCVViewer.h \
@@ -41,7 +42,9 @@ HEADERS  += mainwindow.h \
     ../src/StatsGenerator.h \
     ../src/HandFinder.h \
     ../lib/qcustomplot/qcustomplot.h \
-    StatsGraph.h
+    StatsGraph.h \
+    ../src/GaussianBayesClassifier.h \
+    ../src/Stats.h
 
 FORMS    += mainwindow.ui
 
