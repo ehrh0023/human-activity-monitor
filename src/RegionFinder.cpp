@@ -41,7 +41,7 @@ void RegionFinder::find(Mat image, std::vector<Region>& regions)
 	findContours(output, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);//, Point(0, 0));
 
 	// Determine the Regions
-	regions = vector<Region>(contours.size());
+	regions = vector<Region>();
 	for (size_t i = 0; i < contours.size(); i++)
 	{
 		Region object;

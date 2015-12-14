@@ -109,7 +109,7 @@ std::vector<Region> HandFinder::get_left_regions(cv::Point2f midpoint, const std
 {
 	std::vector<Region> left_regions;
 
-	for (size_t i = 0; i < left_regions.size(); i++)
+	for (size_t i = 0; i < regions.size(); i++)
 	{
 		Region region = regions[i];
 		if (region.center.x < midpoint.x)
